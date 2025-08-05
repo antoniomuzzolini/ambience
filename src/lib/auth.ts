@@ -159,20 +159,4 @@ export class AuthService {
   }
 }
 
-// Token storage utilities for client-side
-export const TokenStorage = {
-  getToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('auth_token');
-  },
-
-  setToken(token: string): void {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem('auth_token', token);
-  },
-
-  removeToken(): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem('auth_token');
-  },
-};
+// Note: TokenStorage moved to ../lib/tokenStorage.ts to avoid importing server-side dependencies in client code

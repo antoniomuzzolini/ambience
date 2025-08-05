@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthState, LoginCredentials, RegisterCredentials, AuthResponse } from '../types/auth';
-import { TokenStorage } from '../lib/auth';
+import { TokenStorage } from '../lib/tokenStorage';
 
 // API functions for client-side authentication
 async function loginUser(email: string, password: string): Promise<AuthResponse> {
