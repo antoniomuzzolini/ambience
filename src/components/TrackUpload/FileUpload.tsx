@@ -94,14 +94,23 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onUploa
           throw new Error(uploadResult.message || 'Upload failed');
         }
       } else {
-        // Large files - use client-side upload to Vercel Blob
-        const { upload } = await import('@vercel/blob/client');
+        // Large files - use client-side upload to Vercel Blob with direct token
+        const { put } = await import('@vercel/blob');
+        
+        // Get the blob token from our API
+        const tokenResponse = await fetch(`/api/blob/upload-url?token=${encodeURIComponent(token)}`);
+        
+        if (!tokenResponse.ok) {
+          throw new Error('Failed to get upload token');
+        }
+        
+        const tokenData = await tokenResponse.json();
         
         const blobPath = `tracks/${selectedType}/${timestamp}-${cleanName}`;
         
-        const blob = await upload(blobPath, file, {
+        const blob = await put(blobPath, file, {
           access: 'public',
-          handleUploadUrl: `/api/blob/upload-url?token=${encodeURIComponent(token)}`,
+          token: tokenData.token,
         });
         
         uploadResult = {
