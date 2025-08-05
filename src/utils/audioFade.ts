@@ -94,3 +94,123 @@ export const changeVolume = (
 ): Promise<void> => {
   return fadeAudio(audioElement, { duration, targetVolume });
 };
+
+// Seamless loop manager for ambient sounds
+export class SeamlessLooper {
+  private audioA: HTMLAudioElement;
+  private audioB: HTMLAudioElement;
+  private isUsingA: boolean = true;
+  private loopInterval: number | null = null;
+  private isActive: boolean = false;
+  private targetVolume: number = 0.5;
+  private crossfadeDuration: number = 1.0; // 1 second crossfade
+
+  constructor(audioSrc: string, volume: number = 0.5) {
+    this.audioA = new Audio(audioSrc);
+    this.audioB = new Audio(audioSrc);
+    this.targetVolume = volume;
+    
+    // Configure both audio elements
+    [this.audioA, this.audioB].forEach(audio => {
+      audio.preload = 'auto';
+      audio.loop = false; // We handle looping manually
+    });
+  }
+
+  async start(): Promise<void> {
+    if (this.isActive) return;
+    
+    this.isActive = true;
+    const currentAudio = this.isUsingA ? this.audioA : this.audioB;
+    
+    // Start playing the first instance
+    currentAudio.volume = 0;
+    await currentAudio.play();
+    await fadeIn(currentAudio, this.targetVolume, 0.5);
+    
+    // Set up the loop monitoring
+    this.setupLoopMonitoring();
+  }
+
+  async stop(): Promise<void> {
+    if (!this.isActive) return;
+    
+    this.isActive = false;
+    if (this.loopInterval) {
+      clearInterval(this.loopInterval);
+      this.loopInterval = null;
+    }
+    
+    // Fade out and stop both instances
+    const fadePromises = [this.audioA, this.audioB].map(audio => {
+      if (!audio.paused) {
+        return fadeOut(audio, 0.5);
+      }
+      return Promise.resolve();
+    });
+    
+    await Promise.all(fadePromises);
+  }
+
+  async setVolume(volume: number): Promise<void> {
+    this.targetVolume = volume;
+    
+    // Update volume for currently playing audio
+    const activeAudio = this.getCurrentAudio();
+    if (activeAudio && !activeAudio.paused) {
+      await changeVolume(activeAudio, volume, 0.3);
+    }
+  }
+
+  private getCurrentAudio(): HTMLAudioElement {
+    return this.isUsingA ? this.audioA : this.audioB;
+  }
+
+  private getNextAudio(): HTMLAudioElement {
+    return this.isUsingA ? this.audioB : this.audioA;
+  }
+
+  private setupLoopMonitoring(): void {
+    this.loopInterval = window.setInterval(() => {
+      if (!this.isActive) return;
+      
+      const currentAudio = this.getCurrentAudio();
+      
+      // Only proceed if audio is playing and duration is known
+      if (currentAudio.paused || !currentAudio.duration || currentAudio.duration <= 5) {
+        return;
+      }
+      
+      const timeRemaining = currentAudio.duration - currentAudio.currentTime;
+      
+      // If we're within the crossfade duration of the end, start the crossfade
+      if (timeRemaining <= this.crossfadeDuration && timeRemaining > 0) {
+        this.performSeamlessLoop();
+      }
+    }, 100); // Check every 100ms
+  }
+
+  private async performSeamlessLoop(): Promise<void> {
+    if (!this.isActive) return;
+    
+    const currentAudio = this.getCurrentAudio();
+    const nextAudio = this.getNextAudio();
+    
+    // Start the next instance from the beginning
+    nextAudio.currentTime = 0;
+    nextAudio.volume = 0;
+    await nextAudio.play();
+    
+    // Crossfade between the two instances
+    await crossFade(currentAudio, nextAudio, this.targetVolume, this.crossfadeDuration);
+    
+    // Switch to the new instance
+    this.isUsingA = !this.isUsingA;
+  }
+
+  cleanup(): void {
+    this.stop();
+    this.audioA.remove();
+    this.audioB.remove();
+  }
+}

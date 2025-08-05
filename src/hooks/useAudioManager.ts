@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useAudioContext } from '../context/AudioContext';
 import { TrackType } from '../types/audio';
+import { SeamlessLooper } from '../utils/audioFade';
 import { fadeIn, fadeOut, crossFade } from '../utils/audioFade';
 
 export const useAudioManager = () => {
@@ -18,6 +19,9 @@ export const useAudioManager = () => {
     ambientRefs,
     spotRefs
   } = useAudioContext();
+
+  // Store seamless loopers for ambient sounds
+  const seamlessLoopers = useRef<Record<string, SeamlessLooper>>({});
 
   const playTrack = useCallback(async (envId: number, trackType: TrackType) => {
     const env = environments.find(e => e.id === envId);
@@ -82,25 +86,68 @@ export const useAudioManager = () => {
     if (!audioElement) return;
     
     if (isActive) {
-      // Fade out and stop
-      if (fadeSettings.enabled) {
-        await fadeOut(audioElement, fadeSettings.duration);
+      // Stop seamless looper if it exists
+      const looper = seamlessLoopers.current[soundId];
+      if (looper) {
+        await looper.stop();
+        delete seamlessLoopers.current[soundId];
       } else {
-        audioElement.pause();
+        // Fallback to regular audio element
+        if (fadeSettings.enabled) {
+          await fadeOut(audioElement, fadeSettings.duration);
+        } else {
+          audioElement.pause();
+        }
       }
       setActiveAmbient(prev => prev.filter(id => id !== soundId));
     } else {
-      // Start and fade in
-      audioElement.loop = true;
-      audioElement.play();
-      if (fadeSettings.enabled) {
-        await fadeIn(audioElement, volumes.ambient, fadeSettings.duration);
+      // Check if we should use seamless looping
+      const shouldUseSeamlessLoop = await checkShouldUseSeamlessLoop(audioElement);
+      
+      if (shouldUseSeamlessLoop) {
+        // Create and start seamless looper
+        const looper = new SeamlessLooper(audioElement.src, volumes.ambient);
+        seamlessLoopers.current[soundId] = looper;
+        await looper.start();
       } else {
-        audioElement.volume = volumes.ambient;
+        // Use regular looping for short tracks
+        audioElement.loop = true;
+        audioElement.play();
+        if (fadeSettings.enabled) {
+          await fadeIn(audioElement, volumes.ambient, fadeSettings.duration);
+        } else {
+          audioElement.volume = volumes.ambient;
+        }
       }
       setActiveAmbient(prev => [...prev, soundId]);
     }
   }, [activeAmbient, ambientRefs, volumes.ambient, fadeSettings, setActiveAmbient]);
+
+  // Check if audio should use seamless looping (for tracks > 5 seconds)
+  const checkShouldUseSeamlessLoop = (audioElement: HTMLAudioElement): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const checkDuration = () => {
+        if (audioElement.duration && !isNaN(audioElement.duration)) {
+          resolve(audioElement.duration > 5);
+        } else if (audioElement.readyState >= 1) {
+          // If we can't get duration but audio is loaded, assume it's short
+          resolve(false);
+        } else {
+          // Wait a bit more for metadata to load
+          setTimeout(checkDuration, 100);
+        }
+      };
+      
+      if (audioElement.readyState >= 1) {
+        checkDuration();
+      } else {
+        audioElement.addEventListener('loadedmetadata', checkDuration, { once: true });
+        audioElement.addEventListener('canplay', checkDuration, { once: true });
+        // Fallback timeout
+        setTimeout(() => resolve(false), 2000);
+      }
+    });
+  };
 
   const playSpot = useCallback((soundId: string) => {
     const audio = spotRefs.current[soundId];
@@ -145,10 +192,19 @@ export const useAudioManager = () => {
     setCurrentPlayingEnv(null);
   }, [audioRefs, ambientRefs, fadeSettings, setIsPlaying, setActiveAmbient, setCurrentPlayingEnv]);
 
+  // Update volume for seamless loopers when volume changes
+  const updateSeamlessLooperVolumes = useCallback(async (newVolume: number) => {
+    const updatePromises = Object.values(seamlessLoopers.current).map(looper => 
+      looper.setVolume(newVolume)
+    );
+    await Promise.all(updatePromises);
+  }, []);
+
   return {
     playTrack,
     toggleAmbient,
     playSpot,
-    stopAll
+    stopAll,
+    updateSeamlessLooperVolumes
   };
 };

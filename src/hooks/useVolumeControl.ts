@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useAudioContext } from '../context/AudioContext';
 import { VolumeType, PlayingState } from '../types/audio';
 import { changeVolume } from '../utils/audioFade';
+import { useAudioManager } from './useAudioManager';
 
 export const useVolumeControl = () => {
   const {
@@ -14,6 +15,8 @@ export const useVolumeControl = () => {
     audioRefs,
     ambientRefs
   } = useAudioContext();
+  
+  const { updateSeamlessLooperVolumes } = useAudioManager();
 
   const updateVolume = useCallback(async (type: VolumeType, value: number) => {
     setVolumes(prev => ({ ...prev, [type]: value }));
@@ -21,7 +24,10 @@ export const useVolumeControl = () => {
     const fadeDuration = fadeSettings.enabled ? Math.min(fadeSettings.duration * 0.5, 1) : 0;
     
     if (type === 'ambient') {
-      // Update volume for all active ambient sounds
+      // Update volume for seamless loopers
+      await updateSeamlessLooperVolumes(value);
+      
+      // Update volume for regular ambient sounds (fallback)
       const updatePromises = activeAmbient.map(soundId => {
         const audioElement = ambientRefs.current[soundId];
         if (audioElement && !audioElement.paused) {
