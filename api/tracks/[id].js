@@ -6,6 +6,38 @@ const jwt = require('jsonwebtoken');
 const sql = neon(process.env.NEON_DATABASE_URL);
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-in-production';
 
+// Initialize tracks table
+async function initTracksTable() {
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS user_tracks (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name VARCHAR(255) NOT NULL,
+        filename VARCHAR(255) NOT NULL,
+        url TEXT NOT NULL,
+        type VARCHAR(50) NOT NULL CHECK (type IN ('ambient', 'effect', 'music')),
+        duration INTEGER,
+        file_size BIGINT NOT NULL,
+        mime_type VARCHAR(100) NOT NULL,
+        user_id UUID NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `;
+    
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_user_tracks_user_id ON user_tracks(user_id)
+    `;
+    
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_user_tracks_type ON user_tracks(type)
+    `;
+  } catch (error) {
+    console.error('Failed to initialize tracks table:', error);
+    throw error;
+  }
+}
+
 // Verify JWT token
 function verifyToken(token) {
   try {
@@ -68,6 +100,9 @@ module.exports = async function handler(req, res) {
       });
       return;
     }
+
+    // Initialize database tables
+    await initTracksTable();
 
     // Get track ID from URL
     const { id: trackId } = req.query;
