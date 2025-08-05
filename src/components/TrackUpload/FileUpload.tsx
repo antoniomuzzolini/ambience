@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Upload, X, Music, Volume2, Zap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { TrackUploadRequest } from '../../types/tracks';
+import { upload } from '@vercel/blob/client';
 
 interface FileUploadProps {
   onUploadSuccess?: (track: any) => void;
@@ -64,24 +65,16 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onUploa
     try {
       const token = localStorage.getItem('auth_token');
       
-      // Step 1: Upload file directly to Vercel Blob
-      const formData = new FormData();
-      formData.append('file', file);
-      
+      // Step 1: Upload file directly to Vercel Blob using client-side upload
       const timestamp = Date.now();
       const cleanName = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
       const blobPath = `tracks/${selectedType}/${timestamp}-${cleanName}`;
       
-      const uploadResponse = await fetch(`/api/blob/upload?filename=${encodeURIComponent(blobPath)}`, {
-        method: 'POST',
-        body: formData,
+      // Upload directly to Vercel Blob (bypasses serverless function limits)
+      const blob = await upload(blobPath, file, {
+        access: 'public',
+        handleUploadUrl: '/api/blob/upload-url',
       });
-
-      if (!uploadResponse.ok) {
-        throw new Error('Failed to upload file');
-      }
-
-      const uploadResult = await uploadResponse.json();
       
       // Step 2: Save metadata to database
       const metadataResponse = await fetch('/api/tracks/upload', {
@@ -93,7 +86,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onUploa
         body: JSON.stringify({
           name: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
           filename: cleanName,
-          url: uploadResult.url,
+          url: blob.url,
           type: selectedType,
           fileSize: file.size,
           mimeType: file.type,
@@ -109,7 +102,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onUploa
       }
     } catch (error) {
       console.error('Upload error:', error);
-      onUploadError?.('Upload failed. Please try again.');
+      if (error.message?.includes('413') || error.message?.includes('Too Large')) {
+        onUploadError?.('File is too large. Please try a smaller file (max 50MB).');
+      } else {
+        onUploadError?.('Upload failed. Please try again.');
+      }
     } finally {
       setUploadingFiles(prev => prev.filter(f => f !== filename));
     }
