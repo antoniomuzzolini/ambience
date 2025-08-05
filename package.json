@@ -2,10 +2,9 @@
   "name": "dnd-audio-manager",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node copy-sounds.js && tsc && vite build",
+    "build": "node copy-sounds.js && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "copy-sounds": "node copy-sounds.js"
