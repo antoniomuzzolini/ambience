@@ -5,19 +5,19 @@ import { AudioFile } from '../types/audio';
 // Available ambient sound files
 export const availableAmbientFiles: Record<string, string> = {
   rain: '/sounds/ambience/rain.m4a',
-  wind: '/sounds/ambience/wind.wav',
+  wind: '/sounds/ambience/wind.mp3',
   fire: '/sounds/ambience/fire.m4a',
-  forest: '/sounds/ambience/forest.wav',
-  city: '/sounds/ambience/city.wav',
-  waves: '/sounds/ambience/waves.wav',
+  forest: '/sounds/ambience/forest.mp3',
+  city: '/sounds/ambience/city.mp3',
+  waves: '/sounds/ambience/waves.mp3',
   war: '/sounds/ambience/war.mp3'
 };
 
 // Available sound effect files
 export const availableEffectFiles: Record<string, string> = {
-  wolf: '/sounds/effects/wolf.wav',
-  thunder: '/sounds/effects/thunder.wav',
-  roar: '/sounds/effects/roar.wav',
+  wolf: '/sounds/effects/wolf.mp3',
+  thunder: '/sounds/effects/thunder.mp3',
+  roar: '/sounds/effects/roar.mp3',
   explosion: '/sounds/effects/explosion.mp3'
 };
 

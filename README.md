@@ -24,16 +24,16 @@ Place your audio files in the `/sounds` directory:
 /sounds
 ├── /ambience
 │   ├── rain.m4a
-│   ├── wind.wav
+│   ├── wind.mp3
 │   ├── fire.m4a
-│   ├── forest.wav
-│   ├── city.wav
-│   ├── waves.wav
+│   ├── forest.mp3
+│   ├── city.mp3
+│   ├── waves.mp3
 │   └── war.mp3
 └── /effects
-    ├── wolf.wav
-    ├── thunder.wav
-    ├── roar.wav
+    ├── wolf.mp3
+    ├── thunder.mp3
+    ├── roar.mp3
     └── explosion.mp3
 ```
 
