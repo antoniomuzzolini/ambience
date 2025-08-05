@@ -1,7 +1,7 @@
 import React from 'react';
 import { Music, Upload, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { TrackManager } from '../components/TrackUpload/TrackManager';
+import { SectionedTrackView } from '../components/TrackUpload/SectionedTrackView';
 
 const TracksPage: React.FC = () => {
   return (
@@ -44,13 +44,13 @@ const TracksPage: React.FC = () => {
         {/* Description */}
         <div className="bg-gray-800 p-4 rounded-lg mb-6">
           <p className="text-gray-300">
-            Upload and manage your custom audio tracks. Organize them by type (Music, Ambient, Effects) 
-            and use them in your D&D campaigns alongside the built-in sounds.
+            Upload and manage your custom audio tracks. Each section below shows your tracks organized by type, 
+            with quick upload buttons to add more content to your D&D campaigns.
           </p>
         </div>
 
-        {/* Track Manager */}
-        <TrackManager />
+        {/* Sectioned Track View */}
+        <SectionedTrackView />
       </div>
     </div>
   );
