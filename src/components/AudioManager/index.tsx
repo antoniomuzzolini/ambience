@@ -9,7 +9,6 @@ import { EnvironmentsList } from './EnvironmentsList';
 import { AmbientSounds } from './AmbientSounds';
 import { SoundEffects } from './SoundEffects';
 import { EnvironmentEditor } from './EnvironmentEditor';
-import { TrackManager } from '../TrackUpload/TrackManager';
 
 const AudioManager: React.FC = () => {
   const { editingEnvironment, showSettings, setShowSettings } = useAudioContext();
@@ -62,9 +61,6 @@ const AudioManager: React.FC = () => {
           {/* Sound Effects */}
           <SoundEffects />
         </div>
-
-        {/* Track Manager */}
-        <TrackManager />
       </div>
     </div>
   );
