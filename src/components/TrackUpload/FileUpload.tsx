@@ -74,6 +74,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onUploa
       const blob = await upload(blobPath, file, {
         access: 'public',
         handleUploadUrl: '/api/blob/upload-url',
+        clientPayload: JSON.stringify({ 
+          callbackUrl: `${window.location.origin}/api/blob/upload-url` 
+        }),
       });
       
       // Step 2: Save metadata to database
