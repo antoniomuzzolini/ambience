@@ -9,6 +9,7 @@ import { EnvironmentsList } from './EnvironmentsList';
 import { AmbientSounds } from './AmbientSounds';
 import { SoundEffects } from './SoundEffects';
 import { EnvironmentEditor } from './EnvironmentEditor';
+import { TrackManager } from '../TrackUpload/TrackManager';
 
 const AudioManager: React.FC = () => {
   const { editingEnvironment, showSettings, setShowSettings } = useAudioContext();
@@ -51,7 +52,7 @@ const AudioManager: React.FC = () => {
         {/* Volume Controls */}
         <VolumeControls showSettings={showSettings} />
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-6 mb-6">
           {/* Environments */}
           <EnvironmentsList />
 
@@ -61,6 +62,9 @@ const AudioManager: React.FC = () => {
           {/* Sound Effects */}
           <SoundEffects />
         </div>
+
+        {/* Track Manager */}
+        <TrackManager />
       </div>
     </div>
   );
