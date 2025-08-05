@@ -91,3 +91,6 @@ temp/
 
 # Vite cache
 .vite
+
+# Copied sound files (originals are in /sounds)
+public/sounds/

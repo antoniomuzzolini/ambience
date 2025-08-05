@@ -1,11 +1,13 @@
-import React from 'react'
-import DnDAudioManager from './components/DnDAudioManager'
+import AudioManager from './components/AudioManager'
+import { AudioProvider } from './context/AudioContext'
 import './index.css'
 
 function App() {
   return (
     <div className="App">
-      <DnDAudioManager />
+      <AudioProvider>
+        <AudioManager />
+      </AudioProvider>
     </div>
   )
 }
