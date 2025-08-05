@@ -24,7 +24,7 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({
     setLoading(true);
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('/api/tracks/list?type=music', {
+      const response = await fetch('/api/tracks?type=music', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

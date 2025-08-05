@@ -23,7 +23,7 @@ export const useEnvironments = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('/api/environments/list', {
+      const response = await fetch('/api/environments', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -45,7 +45,7 @@ export const useEnvironments = () => {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('/api/environments/create', {
+      const response = await fetch('/api/environments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export const useEnvironments = () => {
   const deleteEnvironment = useCallback(async (envId: number) => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`/api/environments/${envId}`, {
+      const response = await fetch(`/api/environments?id=${envId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

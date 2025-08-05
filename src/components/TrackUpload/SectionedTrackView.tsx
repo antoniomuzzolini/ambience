@@ -20,7 +20,7 @@ export const SectionedTrackView: React.FC = () => {
       setLoading(true);
       const token = localStorage.getItem('auth_token');
       
-      const response = await fetch('/api/tracks/list', {
+      const response = await fetch('/api/tracks', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

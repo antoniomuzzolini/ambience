@@ -32,7 +32,7 @@ export const EnvironmentEditor: React.FC = () => {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`/api/environments/${editingEnvironment.id}`, {
+      const response = await fetch(`/api/environments?id=${editingEnvironment.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -71,7 +71,7 @@ export const SectionUpload: React.FC<SectionUploadProps> = ({
         formData.append('file', file);
         formData.append('type', trackType);
         
-        const uploadResponse = await fetch('/api/blob/direct-upload', {
+        const uploadResponse = await fetch('/api/blob?action=direct-upload', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -94,7 +94,7 @@ export const SectionUpload: React.FC<SectionUploadProps> = ({
         const { put } = await import('@vercel/blob');
         
         // Get the blob token from our API
-        const tokenResponse = await fetch(`/api/blob/upload-url?token=${encodeURIComponent(token)}`);
+        const tokenResponse = await fetch(`/api/blob?action=upload-url&token=${encodeURIComponent(token)}`);
         
         if (!tokenResponse.ok) {
           throw new Error('Failed to get upload token');
@@ -117,7 +117,7 @@ export const SectionUpload: React.FC<SectionUploadProps> = ({
       }
       
       // Save metadata to database
-      const metadataResponse = await fetch('/api/tracks/upload', {
+      const metadataResponse = await fetch('/api/tracks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -67,7 +67,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, onDeleteSuccess }) 
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`/api/tracks/${track.id}`, {
+      const response = await fetch(`/api/tracks?id=${track.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

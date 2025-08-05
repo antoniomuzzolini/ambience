@@ -35,7 +35,7 @@ async function registerUser(name: string, email: string, password: string): Prom
 
 async function verifyUserToken(token: string): Promise<User | null> {
   try {
-    const response = await fetch('/api/auth/verify', {
+    const response = await fetch('/api/auth?action=verify', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
