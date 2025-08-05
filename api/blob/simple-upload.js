@@ -85,8 +85,25 @@ module.exports = async function handler(req, res) {
       return;
     }
 
+    // Get request body as buffer
+    const chunks = [];
+    for await (const chunk of req) {
+      chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
+
+    if (buffer.length === 0) {
+      res.status(400).json({
+        success: false,
+        message: 'No file data received',
+      });
+      return;
+    }
+
+    console.log(`Uploading ${filename}, size: ${buffer.length} bytes`);
+
     // Upload to Vercel Blob
-    const blob = await put(filename, req.body, {
+    const blob = await put(filename, buffer, {
       access: 'public',
       contentType: contentType || 'application/octet-stream',
     });

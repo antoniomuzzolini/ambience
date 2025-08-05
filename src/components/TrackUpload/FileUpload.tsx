@@ -65,45 +65,34 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onUploa
     try {
       const token = localStorage.getItem('auth_token');
       
-      // Step 1: Upload file to Vercel Blob
-      const timestamp = Date.now();
-      const cleanName = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const blobPath = `tracks/${selectedType}/${timestamp}-${cleanName}`;
+      // Use direct multipart upload (more reliable)
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', selectedType);
       
-      let blob;
+      const uploadResponse = await fetch('/api/blob/direct-upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
       
-      try {
-        // Try client-side upload first (for large files)
-        blob = await upload(blobPath, file, {
-          access: 'public',
-          handleUploadUrl: '/api/blob/upload-url',
-        });
-      } catch (clientError) {
-        console.log('Client upload failed, trying simple upload:', clientError);
-        
-        // Fallback to simple upload for smaller files
-        if (file.size <= 4 * 1024 * 1024) { // 4MB limit
-          const uploadResponse = await fetch(`/api/blob/simple-upload?filename=${encodeURIComponent(blobPath)}&contentType=${encodeURIComponent(file.type)}`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': file.type,
-            },
-            body: file,
-          });
-          
-          if (!uploadResponse.ok) {
-            throw new Error(`Upload failed: ${uploadResponse.status}`);
-          }
-          
-          const uploadResult = await uploadResponse.json();
-          blob = { url: uploadResult.url };
-        } else {
-          throw new Error('File is too large and client upload failed. Please try a smaller file.');
-        }
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        throw new Error(`Upload failed: ${uploadResponse.status} - ${errorText}`);
+      }
+      
+      const uploadResult = await uploadResponse.json();
+      
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.message || 'Upload failed');
       }
       
       // Step 2: Save metadata to database
+      const timestamp = Date.now();
+      const cleanName = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+      
       const metadataResponse = await fetch('/api/tracks/upload', {
         method: 'POST',
         headers: {
@@ -113,7 +102,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onUploa
         body: JSON.stringify({
           name: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
           filename: cleanName,
-          url: blob.url,
+          url: uploadResult.url,
           type: selectedType,
           fileSize: file.size,
           mimeType: file.type,
@@ -129,11 +118,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, onUploa
       }
     } catch (error) {
       console.error('Upload error:', error);
-      if (error.message?.includes('413') || error.message?.includes('Too Large')) {
-        onUploadError?.('File is too large. Please try a smaller file (max 50MB).');
-      } else {
-        onUploadError?.(error.message || 'Upload failed. Please try again.');
-      }
+      onUploadError?.(error.message || 'Upload failed. Please try again.');
     } finally {
       setUploadingFiles(prev => prev.filter(f => f !== filename));
     }

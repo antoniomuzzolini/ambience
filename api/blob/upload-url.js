@@ -1,13 +1,12 @@
 // Upload URL handler for Vercel Blob client-side uploads
-const { handleUpload } = require('@vercel/blob');
+const { handleUpload } = require('@vercel/blob/client');
 
 module.exports = async function handler(req, res) {
   try {
     const jsonResponse = await handleUpload({
       request: req,
-      onBeforeGenerateToken: async (pathname, clientPayload) => {
-        // Add basic validation
-        console.log('Upload request for:', pathname);
+      onBeforeGenerateToken: async (pathname) => {
+        console.log('Generating token for:', pathname);
         
         return {
           allowedContentTypes: [
@@ -15,9 +14,10 @@ module.exports = async function handler(req, res) {
             'audio/m4a', 'audio/aac', 'audio/flac', 'audio/x-m4a'
           ],
           maximumSizeInBytes: 50 * 1024 * 1024, // 50MB
+          tokenPayload: JSON.stringify({ pathname }),
         };
       },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
+      onUploadCompleted: async ({ blob }) => {
         console.log('Upload completed:', blob.url);
       },
     });
@@ -27,7 +27,6 @@ module.exports = async function handler(req, res) {
     console.error('Upload handler error:', error);
     return res.status(400).json({ 
       error: error.message,
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };
