@@ -1,5 +1,5 @@
-import { neon } from '@neondatabase/serverless';
-import jwt from 'jsonwebtoken';
+const { neon } = require('@neondatabase/serverless');
+const jwt = require('jsonwebtoken');
 
 // Initialize Neon client
 const sql = neon(process.env.NEON_DATABASE_URL);
@@ -27,7 +27,7 @@ async function findUserById(id) {
   return result[0] || null;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
