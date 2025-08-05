@@ -17,7 +17,7 @@ export const SoundEffects: React.FC = () => {
   const { 
     globalSpotSounds,
     spotRefs,
-    volume: { spot: volume }
+    volume
   } = useAudioContext();
 
   const { playSpot } = useAudioManager();
@@ -90,7 +90,7 @@ export const SoundEffects: React.FC = () => {
           </h2>
           <div className="flex items-center gap-3">
             <div className="text-sm text-gray-400">
-              Volume: {Math.round(volume * 100)}%
+              Volume: {Math.round((volume?.spot || 0.5) * 100)}%
             </div>
             <button
               onClick={() => setIsModalOpen(true)}

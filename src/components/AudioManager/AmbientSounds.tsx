@@ -17,11 +17,17 @@ export const AmbientSounds: React.FC = () => {
   const { 
     globalAmbientSounds,
     ambientRefs,
-    isPlaying: { ambient: isPlaying },
-    volume: { ambient: volume }
+    activeAmbient,
+    volume
   } = useAudioContext();
 
-  const { playAmbient, stopAmbient } = useAudioManager();
+  const { toggleAmbient } = useAudioManager();
+  
+  const playAmbient = (soundId: string) => toggleAmbient(soundId);
+  const stopAmbient = () => {
+    // Stop all ambient sounds - implementation depends on your audio manager
+    console.log('Stop ambient sounds');
+  };
   const [sounds, setSounds] = useState<Sound[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -94,7 +100,7 @@ export const AmbientSounds: React.FC = () => {
           </h2>
           <div className="flex items-center gap-3">
             <div className="text-sm text-gray-400">
-              Volume: {Math.round(volume * 100)}%
+              Volume: {Math.round((volume?.ambient || 0.5) * 100)}%
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
@@ -114,9 +120,9 @@ export const AmbientSounds: React.FC = () => {
             return (
               <div key={`${sound.source}-${sound.id}`} className="text-center">
                 <button
-                  onClick={() => isPlaying === sound.id ? stopAmbient() : playAmbient(sound.id)}
+                  onClick={() => activeAmbient.includes(sound.id) ? stopAmbient() : playAmbient(sound.id)}
                   className={`w-full p-3 rounded-lg border-2 transition-all ${
-                    isPlaying === sound.id 
+                    activeAmbient.includes(sound.id) 
                       ? 'bg-green-600 border-green-500 text-white' 
                       : 'bg-gray-700 border-gray-600 hover:bg-gray-600 text-gray-200'
                   }`}
@@ -127,7 +133,7 @@ export const AmbientSounds: React.FC = () => {
                     <div className="text-xs text-blue-300 mt-1">Custom</div>
                   )}
                   <div className="mt-1">
-                    {isPlaying === sound.id ? (
+                    {activeAmbient.includes(sound.id) ? (
                       <Pause size={16} className="mx-auto" />
                     ) : (
                       <Play size={16} className="mx-auto" />
