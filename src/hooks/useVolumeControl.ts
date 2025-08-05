@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useAudioContext } from '../context/AudioContext';
 import { VolumeType, PlayingState } from '../types/audio';
+import { changeVolume } from '../utils/audioFade';
 
 export const useVolumeControl = () => {
   const {
@@ -9,31 +10,46 @@ export const useVolumeControl = () => {
     activeAmbient,
     currentPlayingEnv,
     isPlaying,
+    fadeSettings,
     audioRefs,
     ambientRefs
   } = useAudioContext();
 
-  const updateVolume = useCallback((type: VolumeType, value: number) => {
+  const updateVolume = useCallback(async (type: VolumeType, value: number) => {
     setVolumes(prev => ({ ...prev, [type]: value }));
     
+    const fadeDuration = fadeSettings.enabled ? Math.min(fadeSettings.duration * 0.5, 1) : 0;
+    
     if (type === 'ambient') {
-      activeAmbient.forEach(soundId => {
+      // Update volume for all active ambient sounds
+      const updatePromises = activeAmbient.map(soundId => {
         const audioElement = ambientRefs.current[soundId];
-        if (audioElement) {
-          audioElement.volume = value;
+        if (audioElement && !audioElement.paused) {
+          return fadeDuration > 0 
+            ? changeVolume(audioElement, value, fadeDuration)
+            : Promise.resolve((audioElement.volume = value));
         }
+        return Promise.resolve();
       });
+      await Promise.all(updatePromises);
     } else if (type === 'music') {
+      // Update volume for currently playing music track
       const activeTrackTypes: (keyof PlayingState)[] = ['combat', 'exploration', 'sneak'];
-      activeTrackTypes.forEach(trackType => {
-        const activeAudioKey = `${currentPlayingEnv}_${trackType}`;
-        const audioElement = audioRefs.current[activeAudioKey];
-        if (audioElement && isPlaying[trackType]) {
-          audioElement.volume = value;
+      const updatePromises = activeTrackTypes.map(trackType => {
+        if (isPlaying[trackType]) {
+          const activeAudioKey = `${currentPlayingEnv}_${trackType}`;
+          const audioElement = audioRefs.current[activeAudioKey];
+          if (audioElement && !audioElement.paused) {
+            return fadeDuration > 0 
+              ? changeVolume(audioElement, value, fadeDuration)
+              : Promise.resolve((audioElement.volume = value));
+          }
         }
+        return Promise.resolve();
       });
+      await Promise.all(updatePromises);
     }
-  }, [volumes, setVolumes, activeAmbient, currentPlayingEnv, isPlaying, audioRefs, ambientRefs]);
+  }, [volumes, setVolumes, activeAmbient, currentPlayingEnv, isPlaying, fadeSettings, audioRefs, ambientRefs]);
 
   const getVolumeLabel = useCallback((volumeType: VolumeType) => {
     switch(volumeType) {

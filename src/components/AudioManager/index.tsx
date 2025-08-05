@@ -5,7 +5,6 @@ import { useAudioManager } from '../../hooks/useAudioManager';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useAudioLoader } from '../../hooks/useAudioLoader';
 import { VolumeControls } from './VolumeControls';
-import { AvailableSounds } from './AvailableSounds';
 import { EnvironmentsList } from './EnvironmentsList';
 import { AmbientSounds } from './AmbientSounds';
 import { SoundEffects } from './SoundEffects';
@@ -51,9 +50,6 @@ const AudioManager: React.FC = () => {
 
         {/* Volume Controls */}
         <VolumeControls showSettings={showSettings} />
-
-        {/* Available Sound Files */}
-        {showSettings && <AvailableSounds />}
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Environments */}

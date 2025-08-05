@@ -32,6 +32,11 @@ export interface VolumeState {
   spot: number;
 }
 
+export interface FadeSettings {
+  duration: number; // Fade duration in seconds
+  enabled: boolean; // Whether fading is enabled
+}
+
 export interface PredefinedSound {
   id: string;
   name: string;

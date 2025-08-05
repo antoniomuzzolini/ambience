@@ -6,7 +6,8 @@ import {
   AudioFile, 
   AudioRefs,
   PredefinedSound,
-  PredefinedSpot 
+  PredefinedSpot,
+  FadeSettings
 } from '../types/audio';
 
 // Predefined sounds data - matching actual files in /sounds directory
@@ -36,6 +37,7 @@ interface AudioContextType {
   currentPlayingEnv: number | null;
   volumes: VolumeState;
   activeAmbient: string[];
+  fadeSettings: FadeSettings;
   showSettings: boolean;
   showCreateForm: boolean;
   newEnvironmentName: string;
@@ -50,6 +52,7 @@ interface AudioContextType {
   setVolumes: React.Dispatch<React.SetStateAction<VolumeState>>;
   setActiveAmbient: React.Dispatch<React.SetStateAction<string[]>>;
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
+  setFadeSettings: React.Dispatch<React.SetStateAction<FadeSettings>>;
   setShowCreateForm: React.Dispatch<React.SetStateAction<boolean>>;
   setNewEnvironmentName: React.Dispatch<React.SetStateAction<string>>;
   setGlobalAmbientSounds: React.Dispatch<React.SetStateAction<Record<string, AudioFile>>>;
@@ -83,6 +86,10 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [activeAmbient, setActiveAmbient] = useState<string[]>([]);
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
+  const [fadeSettings, setFadeSettings] = useState<FadeSettings>({
+    duration: 2.0, // Default 2 seconds fade
+    enabled: true
+  });
   const [newEnvironmentName, setNewEnvironmentName] = useState<string>('');
   const [globalAmbientSounds, setGlobalAmbientSounds] = useState<Record<string, AudioFile>>({});
   const [globalSpotSounds, setGlobalSpotSounds] = useState<Record<string, AudioFile>>({});
@@ -101,6 +108,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     volumes,
     activeAmbient,
     showSettings,
+    fadeSettings,
     showCreateForm,
     newEnvironmentName,
     globalAmbientSounds,
@@ -114,6 +122,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setVolumes,
     setActiveAmbient,
     setShowSettings,
+    setFadeSettings,
     setShowCreateForm,
     setNewEnvironmentName,
     setGlobalAmbientSounds,

@@ -1,6 +1,6 @@
 // Utility script to copy sound files to public directory
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 function copyFileSync(source, target) {
   let targetFile = target;

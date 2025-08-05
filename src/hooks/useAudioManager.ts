@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useAudioContext } from '../context/AudioContext';
 import { TrackType } from '../types/audio';
+import { fadeIn, fadeOut, crossFade } from '../utils/audioFade';
 
 export const useAudioManager = () => {
   const {
@@ -12,64 +13,94 @@ export const useAudioManager = () => {
     volumes,
     activeAmbient,
     setActiveAmbient,
+    fadeSettings,
     audioRefs,
     ambientRefs,
     spotRefs
   } = useAudioContext();
 
-  const playTrack = useCallback((envId: number, trackType: TrackType) => {
+  const playTrack = useCallback(async (envId: number, trackType: TrackType) => {
     const env = environments.find(e => e.id === envId);
     if (!env?.tracks[trackType]) return;
     
-    // Stop all other tracks
-    Object.keys(isPlaying).forEach(key => {
-      const audioElement = audioRefs.current[`${currentPlayingEnv}_${key}`];
-      if (audioElement) {
-        audioElement.pause();
-      }
-    });
-    
     const audioKey = `${envId}_${trackType}`;
-    const audio = audioRefs.current[audioKey];
+    const newAudio = audioRefs.current[audioKey];
     
-    if (audio) {
-      if (isPlaying[trackType] && currentPlayingEnv === envId) {
-        audio.pause();
-        setIsPlaying(prev => ({ ...prev, [trackType]: false }));
-        setCurrentPlayingEnv(null);
+    if (!newAudio) return;
+    
+    if (isPlaying[trackType] && currentPlayingEnv === envId) {
+      // Stop current track with fade
+      if (fadeSettings.enabled) {
+        await fadeOut(newAudio, fadeSettings.duration);
       } else {
-        audio.volume = volumes.music;
-        audio.loop = true;
-        audio.play();
-        setIsPlaying({
-          combat: trackType === 'combat',
-          exploration: trackType === 'exploration',
-          sneak: trackType === 'sneak'
-        });
-        setCurrentPlayingEnv(envId);
+        newAudio.pause();
+      }
+      setIsPlaying(prev => ({ ...prev, [trackType]: false }));
+      setCurrentPlayingEnv(null);
+      return;
+    }
+    
+    // Find currently playing track of the same type
+    const currentAudioKey = `${currentPlayingEnv}_${trackType}`;
+    const currentAudio = audioRefs.current[currentAudioKey];
+    
+    if (currentAudio && isPlaying[trackType]) {
+      // Cross-fade between tracks
+      if (fadeSettings.enabled) {
+        newAudio.loop = true;
+        newAudio.play();
+        await crossFade(currentAudio, newAudio, volumes.music, fadeSettings.duration);
+      } else {
+        currentAudio.pause();
+        newAudio.volume = volumes.music;
+        newAudio.loop = true;
+        newAudio.play();
+      }
+    } else {
+      // Start new track with fade in
+      newAudio.loop = true;
+      newAudio.play();
+      if (fadeSettings.enabled) {
+        await fadeIn(newAudio, volumes.music, fadeSettings.duration);
+      } else {
+        newAudio.volume = volumes.music;
       }
     }
-  }, [environments, isPlaying, currentPlayingEnv, volumes.music, audioRefs, setIsPlaying, setCurrentPlayingEnv]);
+    
+    setIsPlaying({
+      combat: trackType === 'combat',
+      exploration: trackType === 'exploration',
+      sneak: trackType === 'sneak'
+    });
+    setCurrentPlayingEnv(envId);
+  }, [environments, isPlaying, currentPlayingEnv, volumes.music, fadeSettings, audioRefs, setIsPlaying, setCurrentPlayingEnv]);
 
-  const toggleAmbient = useCallback((soundId: string) => {
+  const toggleAmbient = useCallback(async (soundId: string) => {
     const isActive = activeAmbient.includes(soundId);
+    const audioElement = ambientRefs.current[soundId];
+    
+    if (!audioElement) return;
     
     if (isActive) {
-      const audioElement = ambientRefs.current[soundId];
-      if (audioElement) {
+      // Fade out and stop
+      if (fadeSettings.enabled) {
+        await fadeOut(audioElement, fadeSettings.duration);
+      } else {
         audioElement.pause();
       }
       setActiveAmbient(prev => prev.filter(id => id !== soundId));
     } else {
-      const audio = ambientRefs.current[soundId];
-      if (audio) {
-        audio.volume = volumes.ambient;
-        audio.loop = true;
-        audio.play();
+      // Start and fade in
+      audioElement.loop = true;
+      audioElement.play();
+      if (fadeSettings.enabled) {
+        await fadeIn(audioElement, volumes.ambient, fadeSettings.duration);
+      } else {
+        audioElement.volume = volumes.ambient;
       }
       setActiveAmbient(prev => [...prev, soundId]);
     }
-  }, [activeAmbient, ambientRefs, volumes.ambient, setActiveAmbient]);
+  }, [activeAmbient, ambientRefs, volumes.ambient, fadeSettings, setActiveAmbient]);
 
   const playSpot = useCallback((soundId: string) => {
     const audio = spotRefs.current[soundId];
@@ -80,21 +111,39 @@ export const useAudioManager = () => {
     }
   }, [spotRefs, volumes.spot]);
 
-  const stopAll = useCallback(() => {
-    // Stop all tracks
-    Object.values(audioRefs.current).forEach(audio => {
-      if (audio) audio.pause();
-    });
-    
-    // Stop all ambient
-    Object.values(ambientRefs.current).forEach(audio => {
-      if (audio) audio.pause();
-    });
+  const stopAll = useCallback(async () => {
+    if (fadeSettings.enabled) {
+      // Fade out all tracks
+      const fadePromises: Promise<void>[] = [];
+      
+      Object.values(audioRefs.current).forEach(audio => {
+        if (audio && !audio.paused) {
+          fadePromises.push(fadeOut(audio, fadeSettings.duration));
+        }
+      });
+      
+      Object.values(ambientRefs.current).forEach(audio => {
+        if (audio && !audio.paused) {
+          fadePromises.push(fadeOut(audio, fadeSettings.duration));
+        }
+      });
+      
+      await Promise.all(fadePromises);
+    } else {
+      // Stop immediately
+      Object.values(audioRefs.current).forEach(audio => {
+        if (audio) audio.pause();
+      });
+      
+      Object.values(ambientRefs.current).forEach(audio => {
+        if (audio) audio.pause();
+      });
+    }
     
     setIsPlaying({ combat: false, exploration: false, sneak: false });
     setActiveAmbient([]);
     setCurrentPlayingEnv(null);
-  }, [audioRefs, ambientRefs, setIsPlaying, setActiveAmbient, setCurrentPlayingEnv]);
+  }, [audioRefs, ambientRefs, fadeSettings, setIsPlaying, setActiveAmbient, setCurrentPlayingEnv]);
 
   return {
     playTrack,
