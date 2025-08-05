@@ -1,6 +1,7 @@
 // Type definitions for the D&D Audio Manager
 
 export interface Track {
+  id?: number;
   url: string;
   name: string;
 }
@@ -8,6 +9,8 @@ export interface Track {
 export interface Environment {
   id: number;
   name: string;
+  created_at?: string;
+  updated_at?: string;
   tracks: {
     combat: Track | null;
     exploration: Track | null;

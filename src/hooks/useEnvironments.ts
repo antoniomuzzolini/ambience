@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useAudioContext } from '../context/AudioContext';
 import { Environment, TrackType } from '../types/audio';
 
@@ -17,22 +17,78 @@ export const useEnvironments = () => {
     setGlobalSpotSounds
   } = useAudioContext();
 
-  const createEnvironment = useCallback(() => {
-    if (newEnvironmentName.trim()) {
-      const newEnv: Environment = {
-        id: Date.now(),
-        name: newEnvironmentName.trim(),
-        tracks: {
-          combat: null,
-          exploration: null,
-          sneak: null
-        }
-      };
-      setEnvironments(prev => [...prev, newEnv]);
-      setNewEnvironmentName('');
-      setShowCreateForm(false);
+  const [loading, setLoading] = useState(false);
+
+  const fetchEnvironments = useCallback(async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/environments/list', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setEnvironments(result.environments);
+      }
+    } catch (error) {
+      console.error('Error fetching environments:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [setEnvironments]);
+
+  const createEnvironment = useCallback(async () => {
+    if (!newEnvironmentName.trim()) return;
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/environments/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: newEnvironmentName.trim(),
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setEnvironments(prev => [...prev, result.environment]);
+        setNewEnvironmentName('');
+        setShowCreateForm(false);
+      } else {
+        console.error('Failed to create environment:', result.message);
+      }
+    } catch (error) {
+      console.error('Error creating environment:', error);
     }
   }, [newEnvironmentName, setEnvironments, setNewEnvironmentName, setShowCreateForm]);
+
+  const deleteEnvironment = useCallback(async (envId: number) => {
+    try {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(`/api/environments/${envId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setEnvironments(prev => prev.filter(env => env.id !== envId));
+      } else {
+        console.error('Failed to delete environment:', result.message);
+      }
+    } catch (error) {
+      console.error('Error deleting environment:', error);
+    }
+  }, [setEnvironments]);
 
   const handleFileUpload = useCallback((envId: number, trackType: TrackType, file: File | null) => {
     if (file && (file.type.startsWith('audio/') || file.type === 'video/mp4')) {
@@ -101,6 +157,9 @@ export const useEnvironments = () => {
     globalAmbientSounds,
     globalSpotSounds,
     createEnvironment,
+    deleteEnvironment,
+    fetchEnvironments,
+    loading,
     handleFileUpload,
     handleGlobalAmbientUpload,
     handleGlobalSpotUpload,
