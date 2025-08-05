@@ -21,22 +21,71 @@ function verifyToken(token) {
 
 async function initEnvironmentsTable() {
   try {
+    // First check what type the users.id column is
+    const userTableInfo = await sql`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'users' AND column_name = 'id'
+    `;
+    
+    console.log('Users table id column info:', userTableInfo);
+    
+    // Create environments table with correct user_id type
     await sql`
       CREATE TABLE IF NOT EXISTS user_environments (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL,
+        user_id UUID NOT NULL,
         name VARCHAR(255) NOT NULL,
         combat_track_id INTEGER NULL,
         exploration_track_id INTEGER NULL,
         sneak_track_id INTEGER NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (combat_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL,
-        FOREIGN KEY (exploration_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL,
-        FOREIGN KEY (sneak_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
+    
+    // Add foreign key constraints separately to handle existing data
+    try {
+      await sql`
+        ALTER TABLE user_environments 
+        ADD CONSTRAINT IF NOT EXISTS user_environments_user_id_fkey 
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      `;
+    } catch (fkError) {
+      console.log('Foreign key constraint already exists or error:', fkError.message);
+    }
+
+    try {
+      await sql`
+        ALTER TABLE user_environments 
+        ADD CONSTRAINT IF NOT EXISTS user_environments_combat_track_fkey 
+        FOREIGN KEY (combat_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL
+      `;
+    } catch (fkError) {
+      console.log('Combat track foreign key constraint issue:', fkError.message);
+    }
+
+    try {
+      await sql`
+        ALTER TABLE user_environments 
+        ADD CONSTRAINT IF NOT EXISTS user_environments_exploration_track_fkey 
+        FOREIGN KEY (exploration_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL
+      `;
+    } catch (fkError) {
+      console.log('Exploration track foreign key constraint issue:', fkError.message);
+    }
+
+    try {
+      await sql`
+        ALTER TABLE user_environments 
+        ADD CONSTRAINT IF NOT EXISTS user_environments_sneak_track_fkey 
+        FOREIGN KEY (sneak_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL
+      `;
+    } catch (fkError) {
+      console.log('Sneak track foreign key constraint issue:', fkError.message);
+    }
+
+    console.log('✅ user_environments table initialized');
   } catch (error) {
     console.error('❌ Error initializing user_environments table:', error);
     throw error;

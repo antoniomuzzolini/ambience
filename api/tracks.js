@@ -21,20 +21,33 @@ function verifyToken(token) {
 
 async function initTracksTable() {
   try {
+    // Create tracks table with UUID user_id to match users table
     await sql`
       CREATE TABLE IF NOT EXISTS user_tracks (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL,
+        user_id UUID NOT NULL,
         name VARCHAR(255) NOT NULL,
         filename VARCHAR(255) NOT NULL,
         url TEXT NOT NULL,
         type VARCHAR(50) NOT NULL CHECK (type IN ('music', 'ambient', 'effect')),
         file_size BIGINT,
         mime_type VARCHAR(100),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
+    
+    // Add foreign key constraint separately
+    try {
+      await sql`
+        ALTER TABLE user_tracks 
+        ADD CONSTRAINT IF NOT EXISTS user_tracks_user_id_fkey 
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      `;
+    } catch (fkError) {
+      console.log('Tracks foreign key constraint already exists or error:', fkError.message);
+    }
+    
+    console.log('✅ user_tracks table initialized');
   } catch (error) {
     console.error('❌ Error initializing user_tracks table:', error);
     throw error;
