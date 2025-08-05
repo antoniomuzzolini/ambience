@@ -58,7 +58,16 @@ export const useEnvironments = () => {
 
       const result = await response.json();
       if (result.success) {
-        setEnvironments(prev => [...prev, result.environment]);
+        // Ensure the environment has the proper tracks structure
+        const newEnvironment = {
+          ...result.environment,
+          tracks: result.environment.tracks || {
+            combat: null,
+            exploration: null,
+            sneak: null
+          }
+        };
+        setEnvironments(prev => [...prev, newEnvironment]);
         setNewEnvironmentName('');
         setShowCreateForm(false);
       } else {

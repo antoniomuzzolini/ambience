@@ -155,8 +155,20 @@ module.exports = async function handler(req, res) {
 
       const environment = result[0];
 
+      // Transform to match frontend structure with tracks object
+      const environmentWithTracks = {
+        id: environment.id,
+        name: environment.name,
+        created_at: environment.created_at,
+        updated_at: environment.updated_at,
+        tracks: {
+          combat: null,
+          exploration: null,
+          sneak: null
+        }
+      };
+
       // Get track details if any are assigned
-      let environmentWithTracks = environment;
       if (combatTrackId || explorationTrackId || sneakTrackId) {
         const trackIds = [combatTrackId, explorationTrackId, sneakTrackId].filter(Boolean);
         const tracks = await sql`
@@ -170,11 +182,22 @@ module.exports = async function handler(req, res) {
           return acc;
         }, {});
 
-        environmentWithTracks = {
-          ...environment,
-          combat_track: combatTrackId ? trackMap[combatTrackId] : null,
-          exploration_track: explorationTrackId ? trackMap[explorationTrackId] : null,
-          sneak_track: sneakTrackId ? trackMap[sneakTrackId] : null,
+        environmentWithTracks.tracks = {
+          combat: combatTrackId ? {
+            id: trackMap[combatTrackId]?.id,
+            name: trackMap[combatTrackId]?.name,
+            url: trackMap[combatTrackId]?.url
+          } : null,
+          exploration: explorationTrackId ? {
+            id: trackMap[explorationTrackId]?.id,
+            name: trackMap[explorationTrackId]?.name,
+            url: trackMap[explorationTrackId]?.url
+          } : null,
+          sneak: sneakTrackId ? {
+            id: trackMap[sneakTrackId]?.id,
+            name: trackMap[sneakTrackId]?.name,
+            url: trackMap[sneakTrackId]?.url
+          } : null
         };
       }
 

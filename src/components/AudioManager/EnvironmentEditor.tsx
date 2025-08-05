@@ -12,9 +12,9 @@ export const EnvironmentEditor: React.FC = () => {
 
   // Local state for tracks
   const [tracks, setTracks] = useState({
-    combat: editingEnvironment?.tracks.combat || null,
-    exploration: editingEnvironment?.tracks.exploration || null,
-    sneak: editingEnvironment?.tracks.sneak || null,
+    combat: editingEnvironment?.tracks?.combat || null,
+    exploration: editingEnvironment?.tracks?.exploration || null,
+    sneak: editingEnvironment?.tracks?.sneak || null,
   });
 
   if (!editingEnvironment) return null;
