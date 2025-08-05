@@ -8,36 +8,36 @@ const TracksPage: React.FC = () => {
     <div className="bg-gray-900 text-white min-h-screen p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold">🎧 My Tracks</h1>
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <h1 className="text-xl sm:text-3xl font-bold truncate">🎧 My Tracks</h1>
             
-            {/* Navigation */}
-            <nav className="flex items-center gap-2">
+            {/* Navigation - Hidden on very small screens */}
+            <nav className="hidden xs:flex items-center gap-1 sm:gap-2">
               <Link
                 to="/"
-                className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded flex items-center gap-2 text-sm"
+                className="bg-gray-700 hover:bg-gray-600 px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
               >
-                <Music size={16} />
-                Dashboard
+                <Music size={14} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Dashboard</span>
               </Link>
               <Link
                 to="/tracks"
-                className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded flex items-center gap-2 text-sm"
+                className="bg-blue-600 hover:bg-blue-700 px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
               >
-                <Upload size={16} />
-                My Tracks
+                <Upload size={14} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">My Tracks</span>
               </Link>
             </nav>
           </div>
           
           <Link
             to="/"
-            className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded flex items-center gap-2"
+            className="bg-gray-700 hover:bg-gray-600 px-2 sm:px-4 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
             title="Back to Dashboard"
           >
-            <ArrowLeft size={16} />
-            Back to Dashboard
+            <ArrowLeft size={14} className="sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Back to Dashboard</span>
           </Link>
         </div>
 

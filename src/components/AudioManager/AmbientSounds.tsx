@@ -22,12 +22,6 @@ export const AmbientSounds: React.FC = () => {
   } = useAudioContext();
 
   const { toggleAmbient } = useAudioManager();
-  
-  const playAmbient = (soundId: string) => toggleAmbient(soundId);
-  const stopAmbient = () => {
-    // Stop all ambient sounds - implementation depends on your audio manager
-    console.log('Stop ambient sounds');
-  };
   const [sounds, setSounds] = useState<Sound[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -120,7 +114,7 @@ export const AmbientSounds: React.FC = () => {
             return (
               <div key={`${sound.source}-${sound.id}`} className="text-center">
                 <button
-                  onClick={() => activeAmbient.includes(sound.id) ? stopAmbient() : playAmbient(sound.id)}
+                  onClick={() => toggleAmbient(sound.id)}
                   className={`w-full p-3 rounded-lg border-2 transition-all ${
                     activeAmbient.includes(sound.id) 
                       ? 'bg-green-600 border-green-500 text-white' 

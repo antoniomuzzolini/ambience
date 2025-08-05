@@ -29,44 +29,44 @@ const Dashboard: React.FC = () => {
     <div className="bg-gray-900 text-white p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold">🎵 Ambience Manager</h1>
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <h1 className="text-xl sm:text-3xl font-bold truncate">🎵 Ambience Manager</h1>
             
-            {/* Navigation */}
-            <nav className="flex items-center gap-2">
+            {/* Navigation - Hidden on very small screens */}
+            <nav className="hidden xs:flex items-center gap-1 sm:gap-2">
               <Link
                 to="/"
-                className="bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded flex items-center gap-2 text-sm"
+                className="bg-blue-600 hover:bg-blue-700 px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
               >
-                <Music size={16} />
-                Dashboard
+                <Music size={14} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Dashboard</span>
               </Link>
               <Link
                 to="/tracks"
-                className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded flex items-center gap-2 text-sm"
+                className="bg-gray-700 hover:bg-gray-600 px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
               >
-                <Upload size={16} />
-                My Tracks
+                <Upload size={14} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">My Tracks</span>
               </Link>
             </nav>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="bg-gray-700 hover:bg-gray-600 p-2 rounded"
               title="Settings"
             >
-              <Settings size={20} />
+              <Settings size={18} className="sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={stopAll}
-              className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded flex items-center gap-2"
+              className="bg-red-600 hover:bg-red-700 px-2 sm:px-4 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
               title="Stop All Sounds"
             >
-              <Square size={16} />
-              Stop All
+              <Square size={14} className="sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Stop All</span>
             </button>
           </div>
         </div>
