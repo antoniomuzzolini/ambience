@@ -86,6 +86,12 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    console.log('Registration attempt started');
+    console.log('Environment check:', {
+      hasNeonUrl: !!process.env.NEON_DATABASE_URL,
+      hasJwtSecret: !!process.env.JWT_SECRET
+    });
+    
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -144,10 +150,15 @@ module.exports = async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Registration error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     res.status(500).json({
       success: false,
       message: 'Registration failed. Please try again.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 }

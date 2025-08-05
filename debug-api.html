@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Registration API</title>
+</head>
+<body>
+    <h2>Debug Registration API</h2>
+    <button onclick="testRegistration()">Test Registration</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testRegistration() {
+            const result = document.getElementById('result');
+            result.textContent = 'Testing...';
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: 'Test User',
+                        email: 'test@example.com',
+                        password: 'password123'
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                const data = await response.text();
+                result.textContent = `Status: ${response.status}\n\nResponse: ${data}`;
+                
+                if (!response.ok) {
+                    console.error('Error response:', data);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                result.textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
