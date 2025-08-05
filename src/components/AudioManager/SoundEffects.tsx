@@ -1,62 +1,146 @@
-import React from 'react';
-import { Zap, Play } from 'lucide-react';
-import { useAudioContext, predefinedSpots } from '../../context/AudioContext';
-import { useEnvironments } from '../../hooks/useEnvironments';
+import React, { useState, useEffect } from 'react';
+import { Zap, Play, Edit } from 'lucide-react';
+import { useAudioContext } from '../../context/AudioContext';
 import { useAudioManager } from '../../hooks/useAudioManager';
-import { FileUpload } from '../ui/FileUpload';
+import { SectionEditModal } from '../SectionEditor/SectionEditModal';
+
+interface Sound {
+  id: string;
+  name: string;
+  icon: string;
+  file?: string;
+  url?: string;
+  source: 'builtin' | 'uploaded';
+}
 
 export const SoundEffects: React.FC = () => {
-  const { globalSpotSounds, spotRefs } = useAudioContext();
-  const { handleGlobalSpotUpload } = useEnvironments();
+  const { 
+    globalSpotSounds,
+    spotRefs,
+    volume: { spot: volume }
+  } = useAudioContext();
+
   const { playSpot } = useAudioManager();
+  const [sounds, setSounds] = useState<Sound[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const defaultSounds = [
+    { id: 'explosion', name: 'Explosion', icon: '💥', file: 'explosion.mp3', source: 'builtin' as const },
+    { id: 'thunder', name: 'Thunder', icon: '⚡', file: 'thunder.mp3', source: 'builtin' as const },
+    { id: 'wolf', name: 'Wolf', icon: '🐺', file: 'wolf.mp3', source: 'builtin' as const },
+    { id: 'roar', name: 'Roar', icon: '🦁', file: 'roar.mp3', source: 'builtin' as const }
+  ];
+
+  const fetchSectionConfig = async () => {
+    try {
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/sections?section=effect', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setSounds(result.sounds || defaultSounds);
+        } else {
+          setSounds(defaultSounds);
+        }
+      } else {
+        setSounds(defaultSounds);
+      }
+    } catch (error) {
+      console.error('Error fetching effect section config:', error);
+      setSounds(defaultSounds);
+    }
+  };
+
+  useEffect(() => {
+    fetchSectionConfig();
+  }, []);
+
+  const handleSectionSave = (newSounds: Sound[]) => {
+    setSounds(newSounds);
+  };
+
+  const getAudioSrc = (sound: Sound) => {
+    if (sound.source === 'uploaded') {
+      return sound.url;
+    }
+    const customSound = globalSpotSounds[sound.id];
+    return customSound?.url || `/sounds/effects/${sound.file}`;
+  };
+
+  const getDisplayName = (sound: Sound) => {
+    if (sound.source === 'uploaded') {
+      return sound.name;
+    }
+    const customSound = globalSpotSounds[sound.id];
+    return customSound?.name || sound.name;
+  };
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <Zap size={20} />
-        Sound Effects
-      </h2>
-      
-      <div className="grid grid-cols-2 gap-2">
-        {predefinedSpots.map(spot => (
-          <div key={spot.id} className="p-2 bg-gray-700 rounded">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">
-                {spot.icon} {spot.name}
-              </span>
-              <div className="flex items-center gap-1">
-                <kbd className="bg-gray-600 px-1 rounded text-xs">{spot.key}</kbd>
-                <button
-                  onClick={() => playSpot(spot.id)}
-                  className="p-1 rounded text-xs bg-purple-600 hover:bg-purple-700"
-                  disabled={!globalSpotSounds[spot.id]}
-                >
-                  <Play size={12} />
-                </button>
-              </div>
+    <>
+      <div className="bg-gray-800 p-4 rounded-lg">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <Zap size={20} />
+            Sound Effects
+          </h2>
+          <div className="flex items-center gap-3">
+            <div className="text-sm text-gray-400">
+              Volume: {Math.round(volume * 100)}%
             </div>
-            
-            {globalSpotSounds[spot.id] ? (
-              <audio
-                ref={el => spotRefs.current[spot.id] = el}
-                src={globalSpotSounds[spot.id].url}
-              />
-            ) : (
-              <FileUpload
-                onFileSelect={(file) => handleGlobalSpotUpload(spot.id, file)}
-                label="Upload"
-                className="!p-1 !gap-1 text-xs"
-              />
-            )}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 p-2 rounded text-white"
+              title="Edit Section"
+            >
+              <Edit size={16} />
+            </button>
           </div>
-        ))}
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {sounds.map(sound => {
+            const audioSrc = getAudioSrc(sound);
+            const displayName = getDisplayName(sound);
+            
+            return (
+              <div key={`${sound.source}-${sound.id}`} className="text-center">
+                <button
+                  onClick={() => playSpot(sound.id)}
+                  className="w-full p-3 rounded-lg border-2 bg-gray-700 border-gray-600 hover:bg-gray-600 text-gray-200 transition-all"
+                >
+                  <div className="text-2xl mb-1">{sound.icon}</div>
+                  <div className="text-sm font-medium">{displayName}</div>
+                  {sound.source === 'uploaded' && (
+                    <div className="text-xs text-blue-300 mt-1">Custom</div>
+                  )}
+                  <div className="mt-1">
+                    <Play size={16} className="mx-auto" />
+                  </div>
+                </button>
+                
+                <audio
+                  ref={el => spotRefs.current[sound.id] = el}
+                  src={audioSrc}
+                  preload="none"
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
-      
-      <div className="mt-4 p-2 bg-gray-700 rounded">
-        <p className="text-xs text-gray-400">
-          💡 Use number keys (1-6) to quickly trigger sound effects!
-        </p>
-      </div>
-    </div>
+
+      <SectionEditModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        sectionType="effect"
+        sectionTitle="Sound Effects"
+        onSave={handleSectionSave}
+      />
+    </>
   );
 };
