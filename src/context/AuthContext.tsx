@@ -1,6 +1,54 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthState, LoginCredentials, RegisterCredentials, AuthResponse } from '../types/auth';
-import { AuthService, TokenStorage } from '../lib/auth';
+import { TokenStorage } from '../lib/auth';
+
+// API functions for client-side authentication
+async function loginUser(email: string, password: string): Promise<AuthResponse> {
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return { success: false, message: 'Network error' };
+  }
+}
+
+async function registerUser(name: string, email: string, password: string): Promise<AuthResponse> {
+  try {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    });
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return { success: false, message: 'Network error' };
+  }
+}
+
+async function verifyUserToken(token: string): Promise<User | null> {
+  try {
+    const response = await fetch('/api/auth/verify', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    
+    const data = await response.json();
+    return data.success ? data.user : null;
+  } catch (error) {
+    return null;
+  }
+}
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<AuthResponse>;
@@ -29,7 +77,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           return;
         }
 
-        const user = await AuthService.verifyUser(token);
+        const user = await verifyUserToken(token);
         if (user) {
           setState({
             user,
@@ -66,7 +114,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const response = await AuthService.login(credentials.email, credentials.password);
+      const response = await loginUser(credentials.email, credentials.password);
 
       if (response.success && response.user && response.token) {
         TokenStorage.setToken(response.token);
@@ -100,7 +148,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const response = await AuthService.register(
+      const response = await registerUser(
         credentials.name,
         credentials.email,
         credentials.password
