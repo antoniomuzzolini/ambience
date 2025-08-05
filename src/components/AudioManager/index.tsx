@@ -25,11 +25,11 @@ const AudioManager: React.FC = () => {
 
   // Main Dashboard View
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
+    <div className="bg-gray-900 text-white p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">🎵 D&D Audio Manager</h1>
+          <h1 className="text-3xl font-bold">🎵 Ambience Manager</h1>
           
           <div className="flex items-center gap-2">
             <button
