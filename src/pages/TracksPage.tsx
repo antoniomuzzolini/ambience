@@ -12,21 +12,23 @@ const TracksPage: React.FC = () => {
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <h1 className="text-xl sm:text-3xl font-bold truncate">🎧 My Tracks</h1>
             
-            {/* Navigation - Hidden on very small screens */}
-            <nav className="hidden xs:flex items-center gap-1 sm:gap-2">
+            {/* Navigation - Always visible but icon-only on mobile */}
+            <nav className="flex items-center gap-1 sm:gap-2">
               <Link
                 to="/"
                 className="bg-gray-700 hover:bg-gray-600 px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                title="Dashboard"
               >
-                <Music size={14} className="sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline">Dashboard</span>
+                <Music size={16} className="sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">Dashboard</span>
               </Link>
               <Link
                 to="/tracks"
                 className="bg-blue-600 hover:bg-blue-700 px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                title="My Tracks"
               >
-                <Upload size={14} className="sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline">My Tracks</span>
+                <Upload size={16} className="sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">My Tracks</span>
               </Link>
             </nav>
           </div>
@@ -36,8 +38,8 @@ const TracksPage: React.FC = () => {
             className="bg-gray-700 hover:bg-gray-600 px-2 sm:px-4 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
             title="Back to Dashboard"
           >
-            <ArrowLeft size={14} className="sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">Back to Dashboard</span>
+            <ArrowLeft size={16} className="sm:w-4 sm:h-4" />
+            <span className="hidden xs:inline">Back</span>
           </Link>
         </div>
 
