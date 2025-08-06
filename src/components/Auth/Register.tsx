@@ -10,8 +10,7 @@ interface RegisterProps {
 export const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
   const { register, isLoading, error, clearError } = useAuth();
   const [credentials, setCredentials] = useState<RegisterCredentials>({
-    name: '',
-    email: '',
+    username: '',
     password: '',
   });
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -25,18 +24,13 @@ export const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
     clearError();
 
     // Basic validation
-    if (!credentials.name.trim()) {
-      setLocalError('Name is required');
+    if (!credentials.username.trim()) {
+      setLocalError('Username is required');
       return;
     }
 
-    if (!credentials.email.trim()) {
-      setLocalError('Email is required');
-      return;
-    }
-
-    if (!credentials.email.includes('@')) {
-      setLocalError('Please enter a valid email address');
+    if (credentials.username.length < 3) {
+      setLocalError('Username must be at least 3 characters long');
       return;
     }
 
@@ -96,36 +90,19 @@ export const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300">
-                Full Name
+              <label htmlFor="username" className="block text-sm font-medium text-gray-300">
+                Username
               </label>
               <input
-                id="name"
-                name="name"
+                id="username"
+                name="username"
                 type="text"
-                autoComplete="name"
+                autoComplete="username"
                 required
-                value={credentials.name}
+                value={credentials.username}
                 onChange={handleChange}
                 className="mt-1 relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-400 text-white bg-gray-700 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your full name"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={credentials.email}
-                onChange={handleChange}
-                className="mt-1 relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-400 text-white bg-gray-700 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your email"
+                placeholder="Choose a username (min. 3 characters)"
               />
             </div>
 

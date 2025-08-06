@@ -3,12 +3,12 @@ import { User, AuthState, LoginCredentials, RegisterCredentials, AuthResponse } 
 import { TokenStorage } from '../lib/tokenStorage';
 
 // API functions for client-side authentication
-async function loginUser(email: string, password: string): Promise<AuthResponse> {
+async function loginUser(username: string, password: string): Promise<AuthResponse> {
   try {
     const response = await fetch('/api/auth?action=login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     });
     
     const data = await response.json();
@@ -18,12 +18,12 @@ async function loginUser(email: string, password: string): Promise<AuthResponse>
   }
 }
 
-async function registerUser(name: string, email: string, password: string): Promise<AuthResponse> {
+async function registerUser(username: string, password: string): Promise<AuthResponse> {
   try {
     const response = await fetch('/api/auth?action=register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ username, password }),
     });
     
     const data = await response.json();
@@ -114,7 +114,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const response = await loginUser(credentials.email, credentials.password);
+      const response = await loginUser(credentials.username, credentials.password);
 
       if (response.success && response.user && response.token) {
         TokenStorage.setToken(response.token);
@@ -149,8 +149,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     try {
       const response = await registerUser(
-        credentials.name,
-        credentials.email,
+        credentials.username,
         credentials.password
       );
 

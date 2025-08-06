@@ -10,7 +10,7 @@ interface LoginProps {
 export const Login: React.FC<LoginProps> = ({ onToggleMode }) => {
   const { login, isLoading, error, clearError } = useAuth();
   const [credentials, setCredentials] = useState<LoginCredentials>({
-    email: '',
+    username: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -22,8 +22,8 @@ export const Login: React.FC<LoginProps> = ({ onToggleMode }) => {
     clearError();
 
     // Basic validation
-    if (!credentials.email.trim()) {
-      setLocalError('Email is required');
+    if (!credentials.username.trim()) {
+      setLocalError('Username is required');
       return;
     }
 
@@ -72,19 +72,19 @@ export const Login: React.FC<LoginProps> = ({ onToggleMode }) => {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                Email address
+              <label htmlFor="username" className="block text-sm font-medium text-gray-300">
+                Username
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
                 required
-                value={credentials.email}
+                value={credentials.username}
                 onChange={handleChange}
                 className="mt-1 relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-400 text-white bg-gray-700 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your email"
+                placeholder="Enter your username"
               />
             </div>
 

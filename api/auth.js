@@ -22,10 +22,11 @@ async function initUsersTable() {
   try {
     await sql`
       CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(255) UNIQUE NOT NULL,
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        username VARCHAR(255) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
       )
     `;
     console.log('✅ Users table initialized');
@@ -59,12 +60,20 @@ module.exports = async function handler(req, res) {
     await initUsersTable();
 
     if (action === 'register' && req.method === 'POST') {
-      const { email, password } = req.body;
+      const { username, password } = req.body;
 
-      if (!email || !password) {
+      if (!username || !password) {
         res.status(400).json({
           success: false,
-          message: 'Email and password are required',
+          message: 'Username and password are required',
+        });
+        return;
+      }
+
+      if (username.length < 3) {
+        res.status(400).json({
+          success: false,
+          message: 'Username must be at least 3 characters long',
         });
         return;
       }
@@ -79,13 +88,13 @@ module.exports = async function handler(req, res) {
 
       // Check if user already exists
       const existingUser = await sql`
-        SELECT id FROM users WHERE email = ${email.toLowerCase()}
+        SELECT id FROM users WHERE username = ${username.toLowerCase()}
       `;
 
       if (existingUser.length > 0) {
         res.status(400).json({
           success: false,
-          message: 'User already exists with this email',
+          message: 'Username already exists',
         });
         return;
       }
@@ -95,9 +104,9 @@ module.exports = async function handler(req, res) {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       const result = await sql`
-        INSERT INTO users (email, password_hash)
-        VALUES (${email.toLowerCase()}, ${hashedPassword})
-        RETURNING id, email, created_at
+        INSERT INTO users (username, password_hash)
+        VALUES (${username.toLowerCase()}, ${hashedPassword})
+        RETURNING id, username, created_at, updated_at
       `;
 
       if (result.length === 0) {
@@ -112,7 +121,7 @@ module.exports = async function handler(req, res) {
 
       // Generate JWT token
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user.id, username: user.username },
         JWT_SECRET,
         { expiresIn: '7d' }
       );
@@ -123,33 +132,34 @@ module.exports = async function handler(req, res) {
         token,
         user: {
           id: user.id,
-          email: user.email,
-          created_at: user.created_at,
+          username: user.username,
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
         },
       });
 
     } else if (action === 'login' && req.method === 'POST') {
-      const { email, password } = req.body;
+      const { username, password } = req.body;
 
-      if (!email || !password) {
+      if (!username || !password) {
         res.status(400).json({
           success: false,
-          message: 'Email and password are required',
+          message: 'Username and password are required',
         });
         return;
       }
 
       // Find user
       const users = await sql`
-        SELECT id, email, password_hash, created_at 
+        SELECT id, username, password_hash, created_at, updated_at 
         FROM users 
-        WHERE email = ${email.toLowerCase()}
+        WHERE username = ${username.toLowerCase()}
       `;
 
       if (users.length === 0) {
         res.status(401).json({
           success: false,
-          message: 'Invalid email or password',
+          message: 'Invalid username or password',
         });
         return;
       }
@@ -162,14 +172,14 @@ module.exports = async function handler(req, res) {
       if (!isValidPassword) {
         res.status(401).json({
           success: false,
-          message: 'Invalid email or password',
+          message: 'Invalid username or password',
         });
         return;
       }
 
       // Generate JWT token
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user.id, username: user.username },
         JWT_SECRET,
         { expiresIn: '7d' }
       );
@@ -180,8 +190,9 @@ module.exports = async function handler(req, res) {
         token,
         user: {
           id: user.id,
-          email: user.email,
-          created_at: user.created_at,
+          username: user.username,
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
         },
       });
 
@@ -209,7 +220,7 @@ module.exports = async function handler(req, res) {
 
       // Get fresh user data
       const users = await sql`
-        SELECT id, email, created_at 
+        SELECT id, username, created_at, updated_at 
         FROM users 
         WHERE id = ${payload.userId}
       `;
@@ -222,9 +233,15 @@ module.exports = async function handler(req, res) {
         return;
       }
 
+      const user = users[0];
       res.status(200).json({
         success: true,
-        user: users[0],
+        user: {
+          id: user.id,
+          username: user.username,
+          createdAt: user.created_at,
+          updatedAt: user.updated_at,
+        },
       });
 
     } else {

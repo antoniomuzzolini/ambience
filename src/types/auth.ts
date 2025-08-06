@@ -2,8 +2,7 @@
 
 export interface User {
   id: string;
-  email: string;
-  name: string;
+  username: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,13 +15,12 @@ export interface AuthState {
 }
 
 export interface LoginCredentials {
-  email: string;
+  username: string;
   password: string;
 }
 
 export interface RegisterCredentials {
-  name: string;
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -35,7 +33,7 @@ export interface AuthResponse {
 
 export interface JWTPayload {
   userId: string;
-  email: string;
+  username: string;
   iat: number;
   exp: number;
 }

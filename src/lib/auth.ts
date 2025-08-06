@@ -27,7 +27,7 @@ export class AuthService {
   static generateToken(user: User): string {
     const payload: Omit<JWTPayload, 'iat' | 'exp'> = {
       userId: user.id,
-      email: user.email,
+      username: user.username,
     };
 
     return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
@@ -43,15 +43,15 @@ export class AuthService {
   }
 
   // Register new user
-  static async register(name: string, email: string, password: string): Promise<AuthResponse> {
+  static async register(username: string, password: string): Promise<AuthResponse> {
     try {
       // Validate input
-      if (!name.trim()) {
-        return { success: false, message: 'Name is required' };
+      if (!username.trim()) {
+        return { success: false, message: 'Username is required' };
       }
 
-      if (!email.trim() || !email.includes('@')) {
-        return { success: false, message: 'Valid email is required' };
+      if (username.length < 3) {
+        return { success: false, message: 'Username must be at least 3 characters' };
       }
 
       if (password.length < 6) {
@@ -59,19 +59,18 @@ export class AuthService {
       }
 
       // Check if user already exists
-      const existingUser = await dbUsers.findByEmail(email.toLowerCase());
+      const existingUser = await dbUsers.findByUsername(username.toLowerCase());
       if (existingUser) {
-        return { success: false, message: 'User with this email already exists' };
+        return { success: false, message: 'Username already exists' };
       }
 
       // Hash password and create user
       const passwordHash = await this.hashPassword(password);
-      const userData = await dbUsers.create(name.trim(), email.toLowerCase(), passwordHash);
+      const userData = await dbUsers.create(username.toLowerCase(), passwordHash);
 
       const user: User = {
         id: userData.id,
-        name: userData.name,
-        email: userData.email,
+        username: userData.username,
         createdAt: new Date(userData.created_at),
         updatedAt: new Date(userData.updated_at),
       };
@@ -91,29 +90,28 @@ export class AuthService {
   }
 
   // Login user
-  static async login(email: string, password: string): Promise<AuthResponse> {
+  static async login(username: string, password: string): Promise<AuthResponse> {
     try {
       // Validate input
-      if (!email.trim() || !password.trim()) {
-        return { success: false, message: 'Email and password are required' };
+      if (!username.trim() || !password.trim()) {
+        return { success: false, message: 'Username and password are required' };
       }
 
       // Find user
-      const userData = await dbUsers.findByEmail(email.toLowerCase());
+      const userData = await dbUsers.findByUsername(username.toLowerCase());
       if (!userData) {
-        return { success: false, message: 'Invalid email or password' };
+        return { success: false, message: 'Invalid username or password' };
       }
 
       // Verify password
       const isValidPassword = await this.verifyPassword(password, userData.password_hash);
       if (!isValidPassword) {
-        return { success: false, message: 'Invalid email or password' };
+        return { success: false, message: 'Invalid username or password' };
       }
 
       const user: User = {
         id: userData.id,
-        name: userData.name,
-        email: userData.email,
+        username: userData.username,
         createdAt: new Date(userData.created_at),
         updatedAt: new Date(userData.updated_at),
       };
@@ -147,8 +145,7 @@ export class AuthService {
 
       return {
         id: userData.id,
-        name: userData.name,
-        email: userData.email,
+        username: userData.username,
         createdAt: new Date(userData.created_at),
         updatedAt: new Date(userData.updated_at),
       };
