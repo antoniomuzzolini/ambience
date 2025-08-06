@@ -29,7 +29,10 @@ const AudioManager: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">🎵 Ambience Manager</h1>
+          <div className="flex items-center gap-3">
+            <img src="/favicon.png" alt="Ambience Logo" className="w-8 h-8" />
+            <h1 className="text-3xl font-bold">Ambience Manager</h1>
+          </div>
           
           <div className="flex items-center gap-2">
             <button
