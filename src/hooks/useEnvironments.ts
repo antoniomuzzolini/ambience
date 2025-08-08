@@ -64,7 +64,7 @@ export const useEnvironments = () => {
           tracks: result.environment.tracks || {
             combat: null,
             exploration: null,
-            sneak: null
+            tension: null
           }
         };
         setEnvironments(prev => [...prev, newEnvironment]);
@@ -142,7 +142,7 @@ export const useEnvironments = () => {
     switch(trackType) {
       case 'combat': return '⚔️';
       case 'exploration': return '🗺️';
-      case 'sneak': return '🥷';
+      case 'tension': return '😰';
       default: return '🎵';
     }
   }, []);
@@ -151,7 +151,7 @@ export const useEnvironments = () => {
     switch(trackType) {
       case 'combat': return 'Combat';
       case 'exploration': return 'Exploration';
-      case 'sneak': return 'Stealth';
+      case 'tension': return 'Tension';
       default: return trackType;
     }
   }, []);

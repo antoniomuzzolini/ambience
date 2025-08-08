@@ -75,7 +75,7 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [isPlaying, setIsPlaying] = useState<PlayingState>({
     combat: false,
     exploration: false,
-    sneak: false
+    tension: false
   });
   const [currentPlayingEnv, setCurrentPlayingEnv] = useState<number | null>(null);
   const [volumes, setVolumes] = useState<VolumeState>({

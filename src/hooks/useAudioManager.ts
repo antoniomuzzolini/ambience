@@ -74,7 +74,7 @@ export const useAudioManager = () => {
     setIsPlaying({
       combat: trackType === 'combat',
       exploration: trackType === 'exploration',
-      sneak: trackType === 'sneak'
+      tension: trackType === 'tension'
     });
     setCurrentPlayingEnv(envId);
   }, [environments, isPlaying, currentPlayingEnv, volumes.music, fadeSettings, audioRefs, setIsPlaying, setCurrentPlayingEnv]);
@@ -187,7 +187,7 @@ export const useAudioManager = () => {
       });
     }
     
-    setIsPlaying({ combat: false, exploration: false, sneak: false });
+    setIsPlaying({ combat: false, exploration: false, tension: false });
     setActiveAmbient([]);
     setCurrentPlayingEnv(null);
   }, [audioRefs, ambientRefs, fadeSettings, setIsPlaying, setActiveAmbient, setCurrentPlayingEnv]);

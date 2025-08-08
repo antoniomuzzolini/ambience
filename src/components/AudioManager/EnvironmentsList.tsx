@@ -121,7 +121,7 @@ export const EnvironmentsList: React.FC = () => {
               
               {/* Quick Music Controls */}
               <div className="grid grid-cols-3 gap-1">
-                {(['combat', 'exploration', 'sneak'] as const).map(trackType => (
+                {(['combat', 'exploration', 'tension'] as const).map(trackType => (
                   <button
                     key={trackType}
                     onClick={() => playTrack(env.id, trackType)}

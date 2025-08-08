@@ -40,7 +40,7 @@ export const useVolumeControl = () => {
       await Promise.all(updatePromises);
     } else if (type === 'music') {
       // Update volume for currently playing music track
-      const activeTrackTypes: (keyof PlayingState)[] = ['combat', 'exploration', 'sneak'];
+      const activeTrackTypes: (keyof PlayingState)[] = ['combat', 'exploration', 'tension'];
       const updatePromises = activeTrackTypes.map(trackType => {
         if (isPlaying[trackType]) {
           const activeAudioKey = `${currentPlayingEnv}_${trackType}`;

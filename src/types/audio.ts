@@ -14,7 +14,7 @@ export interface Environment {
   tracks: {
     combat: Track | null;
     exploration: Track | null;
-    sneak: Track | null;
+    tension: Track | null;
   };
 }
 
@@ -26,7 +26,7 @@ export interface AudioFile {
 export interface PlayingState {
   combat: boolean;
   exploration: boolean;
-  sneak: boolean;
+  tension: boolean;
 }
 
 export interface VolumeState {

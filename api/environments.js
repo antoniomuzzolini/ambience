@@ -38,7 +38,7 @@ async function initEnvironmentsTable() {
         name VARCHAR(255) NOT NULL,
         combat_track_id INTEGER NULL,
         exploration_track_id INTEGER NULL,
-        sneak_track_id INTEGER NULL,
+        tension_track_id INTEGER NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -78,11 +78,11 @@ async function initEnvironmentsTable() {
     try {
       await sql`
         ALTER TABLE user_environments 
-        ADD CONSTRAINT IF NOT EXISTS user_environments_sneak_track_fkey 
-        FOREIGN KEY (sneak_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL
+        ADD CONSTRAINT IF NOT EXISTS user_environments_tension_track_fkey 
+        FOREIGN KEY (tension_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL
       `;
     } catch (fkError) {
-      console.log('Sneak track foreign key constraint issue:', fkError.message);
+      console.log('Tension track foreign key constraint issue:', fkError.message);
     }
 
     console.log('✅ user_environments table initialized');
@@ -129,7 +129,7 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'POST' && !id) {
       // Create environment
-      const { name, combatTrackId, explorationTrackId, sneakTrackId } = req.body;
+      const { name, combatTrackId, explorationTrackId, tensionTrackId } = req.body;
 
       if (!name || !name.trim()) {
         res.status(400).json({
@@ -140,8 +140,8 @@ module.exports = async function handler(req, res) {
       }
 
       const result = await sql`
-        INSERT INTO user_environments (user_id, name, combat_track_id, exploration_track_id, sneak_track_id)
-        VALUES (${payload.userId}, ${name.trim()}, ${combatTrackId || null}, ${explorationTrackId || null}, ${sneakTrackId || null})
+        INSERT INTO user_environments (user_id, name, combat_track_id, exploration_track_id, tension_track_id)
+        VALUES (${payload.userId}, ${name.trim()}, ${combatTrackId || null}, ${explorationTrackId || null}, ${tensionTrackId || null})
         RETURNING *
       `;
 
@@ -164,13 +164,13 @@ module.exports = async function handler(req, res) {
         tracks: {
           combat: null,
           exploration: null,
-          sneak: null
+          tension: null
         }
       };
 
       // Get track details if any are assigned
-      if (combatTrackId || explorationTrackId || sneakTrackId) {
-        const trackIds = [combatTrackId, explorationTrackId, sneakTrackId].filter(Boolean);
+      if (combatTrackId || explorationTrackId || tensionTrackId) {
+        const trackIds = [combatTrackId, explorationTrackId, tensionTrackId].filter(Boolean);
         const tracks = await sql`
           SELECT id, name, url, type 
           FROM user_tracks 
@@ -193,10 +193,10 @@ module.exports = async function handler(req, res) {
             name: trackMap[explorationTrackId]?.name,
             url: trackMap[explorationTrackId]?.url
           } : null,
-          sneak: sneakTrackId ? {
-            id: trackMap[sneakTrackId]?.id,
-            name: trackMap[sneakTrackId]?.name,
-            url: trackMap[sneakTrackId]?.url
+          tension: tensionTrackId ? {
+            id: trackMap[tensionTrackId]?.id,
+            name: trackMap[tensionTrackId]?.name,
+            url: trackMap[tensionTrackId]?.url
           } : null
         };
       }
@@ -218,13 +218,13 @@ module.exports = async function handler(req, res) {
           et.name as exploration_track_name,
           et.url as exploration_track_url,
           et.id as exploration_track_id,
-          st.name as sneak_track_name,
-          st.url as sneak_track_url,
-          st.id as sneak_track_id
+          st.name as tension_track_name,
+          st.url as tension_track_url,
+          st.id as tension_track_id
         FROM user_environments e
         LEFT JOIN user_tracks ct ON e.combat_track_id = ct.id
         LEFT JOIN user_tracks et ON e.exploration_track_id = et.id
-        LEFT JOIN user_tracks st ON e.sneak_track_id = st.id
+        LEFT JOIN user_tracks st ON e.tension_track_id = st.id
         WHERE e.user_id = ${payload.userId}
         ORDER BY e.created_at DESC
       `;
@@ -246,10 +246,10 @@ module.exports = async function handler(req, res) {
             name: env.exploration_track_name,
             url: env.exploration_track_url
           } : null,
-          sneak: env.sneak_track_id ? {
-            id: env.sneak_track_id,
-            name: env.sneak_track_name,
-            url: env.sneak_track_url
+          tension: env.tension_track_id ? {
+            id: env.tension_track_id,
+            name: env.tension_track_name,
+            url: env.tension_track_url
           } : null
         }
       }));
@@ -299,7 +299,7 @@ module.exports = async function handler(req, res) {
 
       } else if (req.method === 'PUT') {
         // Update environment
-        const { name, combatTrackId, explorationTrackId, sneakTrackId } = req.body;
+        const { name, combatTrackId, explorationTrackId, tensionTrackId } = req.body;
 
         if (!name || !name.trim()) {
           res.status(400).json({
@@ -310,7 +310,7 @@ module.exports = async function handler(req, res) {
         }
 
         // Verify track IDs belong to user if provided
-        const trackIds = [combatTrackId, explorationTrackId, sneakTrackId].filter(Boolean);
+        const trackIds = [combatTrackId, explorationTrackId, tensionTrackId].filter(Boolean);
         if (trackIds.length > 0) {
           const userTracks = await sql`
             SELECT id FROM user_tracks 
@@ -335,7 +335,7 @@ module.exports = async function handler(req, res) {
             name = ${name.trim()},
             combat_track_id = ${combatTrackId || null},
             exploration_track_id = ${explorationTrackId || null},
-            sneak_track_id = ${sneakTrackId || null},
+            tension_track_id = ${tensionTrackId || null},
             updated_at = CURRENT_TIMESTAMP
           WHERE id = ${environmentId} AND user_id = ${payload.userId}
           RETURNING *

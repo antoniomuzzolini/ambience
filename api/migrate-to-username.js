@@ -91,13 +91,13 @@ module.exports = async function handler(req, res) {
         name VARCHAR(255) NOT NULL,
         combat_track_id INTEGER NULL,
         exploration_track_id INTEGER NULL,
-        sneak_track_id INTEGER NULL,
+        tension_track_id INTEGER NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (combat_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL,
         FOREIGN KEY (exploration_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL,
-        FOREIGN KEY (sneak_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL
+        FOREIGN KEY (tension_track_id) REFERENCES user_tracks(id) ON DELETE SET NULL
       )
     `;
 

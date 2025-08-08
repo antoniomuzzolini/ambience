@@ -14,12 +14,12 @@ export const EnvironmentEditor: React.FC = () => {
   const [tracks, setTracks] = useState({
     combat: editingEnvironment?.tracks?.combat || null,
     exploration: editingEnvironment?.tracks?.exploration || null,
-    sneak: editingEnvironment?.tracks?.sneak || null,
+    tension: editingEnvironment?.tracks?.tension || null,
   });
 
   if (!editingEnvironment) return null;
 
-  const handleTrackChange = (trackType: 'combat' | 'exploration' | 'sneak', track: { id: number; name: string; url: string } | null) => {
+  const handleTrackChange = (trackType: 'combat' | 'exploration' | 'tension', track: { id: number; name: string; url: string } | null) => {
     setTracks(prev => ({
       ...prev,
       [trackType]: track
@@ -42,7 +42,7 @@ export const EnvironmentEditor: React.FC = () => {
           name: editingEnvironment.name,
           combatTrackId: tracks.combat?.id || null,
           explorationTrackId: tracks.exploration?.id || null,
-          sneakTrackId: tracks.sneak?.id || null,
+          tensionTrackId: tracks.tension?.id || null,
         }),
       });
 
@@ -131,7 +131,7 @@ export const EnvironmentEditor: React.FC = () => {
           </h2>
           
           <div className="grid md:grid-cols-3 gap-6">
-            {(['combat', 'exploration', 'sneak'] as const).map(trackType => (
+            {(['combat', 'exploration', 'tension'] as const).map(trackType => (
               <div key={trackType} className="p-4 bg-gray-700 rounded-lg">
                 <h3 className="font-medium mb-4 text-center flex items-center justify-center gap-2">
                   {getTrackIcon(trackType)}
