@@ -75,37 +75,37 @@ export const SectionedTrackView: React.FC = () => {
   const sections = [
     {
       id: 'music',
-      title: 'Music',
-      description: 'Background music and musical tracks',
+      title: 'Musical Scrolls',
+      description: 'Epic compositions and bardic melodies',
       icon: Music,
-      color: 'bg-purple-600',
-      hoverColor: 'hover:bg-purple-700',
+      color: 'bg-medieval-burgundy',
+      hoverColor: 'hover:bg-medieval-burgundy-dark',
       tracks: tracksByType.music,
     },
     {
       id: 'ambient',
-      title: 'Ambient',
-      description: 'Background loops and atmospheric sounds',
+      title: 'Realm Ambience',
+      description: 'Atmospheric enchantments and mystical loops',
       icon: Volume2,
-      color: 'bg-blue-600',
-      hoverColor: 'hover:bg-blue-700',
+      color: 'bg-medieval-forest',
+      hoverColor: 'hover:bg-medieval-forest-dark',
       tracks: tracksByType.ambient,
     },
     {
       id: 'effect',
-      title: 'Sound Effects',
-      description: 'One-shot sounds and sound effects',
+      title: 'Arcane Effects',
+      description: 'Magical incantations and spell sounds',
       icon: Zap,
-      color: 'bg-green-600',
-      hoverColor: 'hover:bg-green-700',
+      color: 'bg-medieval-gold',
+      hoverColor: 'hover:bg-medieval-gold-dark',
       tracks: tracksByType.effect,
     },
   ];
 
   if (loading) {
     return (
-      <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
-        <div className="text-center text-gray-400">Loading tracks...</div>
+      <div className="medieval-card p-6">
+        <div className="text-center text-medieval-parchment/70 medieval-text">Loading scrolls from the archives...</div>
       </div>
     );
   }
@@ -114,10 +114,10 @@ export const SectionedTrackView: React.FC = () => {
     <div className="space-y-6">
       {/* Global Message Display */}
       {message && (
-        <div className={`p-4 rounded-lg ${
+        <div className={`p-4 rounded-lg medieval-text ${
           message.type === 'success' 
-            ? 'bg-green-900/50 border border-green-500 text-green-200'
-            : 'bg-red-900/50 border border-red-500 text-red-200'
+            ? 'bg-medieval-forest/50 border border-medieval-gold text-medieval-parchment'
+            : 'bg-medieval-burgundy/50 border border-medieval-burgundy text-medieval-parchment'
         }`}>
           {message.text}
         </div>
@@ -125,7 +125,7 @@ export const SectionedTrackView: React.FC = () => {
 
       {/* Error Display */}
       {error && (
-        <div className="bg-red-900/50 border border-red-500 text-red-200 p-4 rounded-lg">
+        <div className="bg-medieval-burgundy/50 border border-medieval-burgundy text-medieval-parchment p-4 rounded-lg medieval-text">
           {error}
         </div>
       )}
@@ -136,20 +136,26 @@ export const SectionedTrackView: React.FC = () => {
         const isUploading = uploadingSections.has(section.id);
         
         return (
-          <div key={section.id} className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+          <div key={section.id} className="medieval-card overflow-hidden relative">
+            {/* Decorative corners */}
+            <div className="absolute top-2 left-2 w-6 h-6 border-l border-t border-medieval-gold/40"></div>
+            <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-medieval-gold/40"></div>
+            <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-medieval-gold/40"></div>
+            <div className="absolute bottom-2 right-2 w-6 h-6 border-r border-b border-medieval-gold/40"></div>
+            
             {/* Section Header */}
-            <div className="p-6 border-b border-gray-700">
+            <div className="p-6 border-b border-medieval-gold/30">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${section.color}`}>
-                    <Icon className="h-5 w-5 text-white" />
+                  <div className={`p-3 rounded-lg ${section.color} shadow-medieval-button`}>
+                    <Icon className="h-5 w-5 text-medieval-parchment" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-white">
+                    <h3 className="text-xl font-semibold text-medieval-gold medieval-heading text-shadow-medieval">
                       {section.title}
                     </h3>
-                    <p className="text-gray-400 text-sm">
-                      {section.description} • {section.tracks.length} track{section.tracks.length !== 1 ? 's' : ''}
+                    <p className="text-medieval-parchment/70 text-sm medieval-text">
+                      {section.description} • {section.tracks.length} scroll{section.tracks.length !== 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
@@ -177,10 +183,10 @@ export const SectionedTrackView: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-400">
-                  <Icon className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-lg font-medium mb-1">No {section.title.toLowerCase()} tracks yet</p>
-                  <p className="text-sm">Upload your first {section.title.toLowerCase()} track to get started</p>
+                <div className="text-center py-8 text-medieval-parchment/70">
+                  <Icon className="h-12 w-12 mx-auto mb-3 opacity-50 text-medieval-gold" />
+                  <p className="text-lg font-medium mb-1 medieval-text text-medieval-gold">No {section.title.toLowerCase()} yet</p>
+                  <p className="text-sm medieval-text">Upload thy first {section.title.toLowerCase().replace('scrolls', 'scroll').replace('effects', 'effect')} to begin</p>
                 </div>
               )}
             </div>
