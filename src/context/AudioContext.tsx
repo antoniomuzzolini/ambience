@@ -7,7 +7,9 @@ import {
   AudioRefs,
   PredefinedSound,
   PredefinedSpot,
-  FadeSettings
+  FadeSettings,
+  TransitionalState,
+  AmbientState
 } from '../types/audio';
 
 // Predefined sounds data - matching actual files in /sounds directory
@@ -34,6 +36,8 @@ interface AudioContextType {
   environments: Environment[];
   editingEnvironment: Environment | null;
   isPlaying: PlayingState;
+  transitionalState: TransitionalState;
+  ambientState: AmbientState;
   currentPlayingEnv: number | null;
   volumes: VolumeState;
   activeAmbient: string[];
@@ -48,6 +52,8 @@ interface AudioContextType {
   setEnvironments: React.Dispatch<React.SetStateAction<Environment[]>>;
   setEditingEnvironment: React.Dispatch<React.SetStateAction<Environment | null>>;
   setIsPlaying: React.Dispatch<React.SetStateAction<PlayingState>>;
+  setTransitionalState: React.Dispatch<React.SetStateAction<TransitionalState>>;
+  setAmbientState: React.Dispatch<React.SetStateAction<AmbientState>>;
   setCurrentPlayingEnv: React.Dispatch<React.SetStateAction<number | null>>;
   setVolumes: React.Dispatch<React.SetStateAction<VolumeState>>;
   setActiveAmbient: React.Dispatch<React.SetStateAction<string[]>>;
@@ -77,6 +83,12 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     exploration: false,
     tension: false
   });
+  const [transitionalState, setTransitionalState] = useState<TransitionalState>({
+    combat: 'idle',
+    exploration: 'idle',
+    tension: 'idle'
+  });
+  const [ambientState, setAmbientState] = useState<AmbientState>({});
   const [currentPlayingEnv, setCurrentPlayingEnv] = useState<number | null>(null);
   const [volumes, setVolumes] = useState<VolumeState>({
     music: 0.7,
@@ -104,6 +116,8 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     environments,
     editingEnvironment,
     isPlaying,
+    transitionalState,
+    ambientState,
     currentPlayingEnv,
     volumes,
     activeAmbient,
@@ -118,6 +132,8 @@ export const AudioProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setEnvironments,
     setEditingEnvironment,
     setIsPlaying,
+    setTransitionalState,
+    setAmbientState,
     setCurrentPlayingEnv,
     setVolumes,
     setActiveAmbient,

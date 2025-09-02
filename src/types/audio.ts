@@ -29,6 +29,16 @@ export interface PlayingState {
   tension: boolean;
 }
 
+export interface TransitionalState {
+  combat: 'idle' | 'starting' | 'playing' | 'stopping';
+  exploration: 'idle' | 'starting' | 'playing' | 'stopping';
+  tension: 'idle' | 'starting' | 'playing' | 'stopping';
+}
+
+export interface AmbientState {
+  [soundId: string]: 'idle' | 'starting' | 'playing' | 'stopping';
+}
+
 export interface VolumeState {
   music: number;
   ambient: number;

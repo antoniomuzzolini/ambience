@@ -18,6 +18,7 @@ export const AmbientSounds: React.FC = () => {
     globalAmbientSounds,
     ambientRefs,
     activeAmbient,
+    ambientState,
     volume
   } = useAudioContext();
 
@@ -117,18 +118,59 @@ export const AmbientSounds: React.FC = () => {
             const audioSrc = getAudioSrc(sound);
             const displayName = getDisplayName(sound);
             const isActive = activeAmbient.includes(sound.id);
+            const currentState = ambientState[sound.id] || 'idle';
+            
+            // Determine button appearance based on state
+            const getButtonStyle = () => {
+              switch (currentState) {
+                case 'starting':
+                  return 'bg-medieval-gold/40 border-medieval-gold text-medieval-parchment shadow-medieval-glow animate-pulse';
+                case 'playing':
+                  return 'bg-medieval-forest border-medieval-gold text-medieval-parchment shadow-medieval-glow';
+                case 'stopping':
+                  return 'bg-medieval-burgundy/60 border-medieval-burgundy text-medieval-parchment/80 animate-pulse';
+                default:
+                  return 'bg-medieval-brown/60 border-medieval-brown hover:bg-medieval-brown/80 hover:border-medieval-gold/50 text-medieval-parchment/90';
+              }
+            };
+
+            const getIconDisplay = () => {
+              switch (currentState) {
+                case 'starting':
+                  return (
+                    <div className="w-6 h-6 rounded-full bg-medieval-gold/40 flex items-center justify-center animate-spin">
+                      <div className="w-2 h-2 bg-medieval-gold rounded-full"></div>
+                    </div>
+                  );
+                case 'playing':
+                  return (
+                    <div className="w-6 h-6 rounded-full bg-medieval-gold/20 flex items-center justify-center">
+                      <Pause size={14} className="text-medieval-gold" />
+                    </div>
+                  );
+                case 'stopping':
+                  return (
+                    <div className="w-6 h-6 rounded-full bg-medieval-burgundy/40 flex items-center justify-center animate-pulse">
+                      <div className="w-2 h-2 bg-medieval-burgundy rounded-full"></div>
+                    </div>
+                  );
+                default:
+                  return (
+                    <div className="w-6 h-6 rounded-full bg-medieval-brown/40 flex items-center justify-center">
+                      <Play size={14} className="text-medieval-parchment/70" />
+                    </div>
+                  );
+              }
+            };
             
             return (
               <div key={`${sound.source}-${sound.id}`} className="text-center">
                 <button
                   onClick={() => toggleAmbient(sound.id)}
-                  className={`w-full p-4 rounded-lg border-2 transition-all medieval-text relative overflow-hidden ${
-                    isActive
-                      ? 'bg-medieval-forest border-medieval-gold text-medieval-parchment shadow-medieval-glow' 
-                      : 'bg-medieval-brown/60 border-medieval-brown hover:bg-medieval-brown/80 hover:border-medieval-gold/50 text-medieval-parchment/90'
-                  }`}
+                  className={`w-full p-4 rounded-lg border-2 transition-all medieval-text relative overflow-hidden ${getButtonStyle()}`}
+                  disabled={currentState === 'starting' || currentState === 'stopping'}
                 >
-                  {isActive && (
+                  {(currentState === 'playing' || currentState === 'starting') && (
                     <div className="absolute inset-0 bg-medieval-gold/10 animate-pulse"></div>
                   )}
                   <div className="relative z-10">
@@ -138,15 +180,7 @@ export const AmbientSounds: React.FC = () => {
                       <div className="text-xs text-medieval-gold mt-1 italic">Enchanted</div>
                     )}
                     <div className="mt-2 flex justify-center">
-                      {isActive ? (
-                        <div className="w-6 h-6 rounded-full bg-medieval-gold/20 flex items-center justify-center">
-                          <Pause size={14} className="text-medieval-gold" />
-                        </div>
-                      ) : (
-                        <div className="w-6 h-6 rounded-full bg-medieval-brown/40 flex items-center justify-center">
-                          <Play size={14} className="text-medieval-parchment/70" />
-                        </div>
-                      )}
+                      {getIconDisplay()}
                     </div>
                   </div>
                 </button>

@@ -9,6 +9,10 @@ export const useAudioManager = () => {
     environments,
     isPlaying,
     setIsPlaying,
+    transitionalState,
+    setTransitionalState,
+    ambientState,
+    setAmbientState,
     currentPlayingEnv,
     setCurrentPlayingEnv,
     volumes,
@@ -33,6 +37,9 @@ export const useAudioManager = () => {
     if (!newAudio) return;
     
     if (isPlaying[trackType] && currentPlayingEnv === envId) {
+      // Immediate feedback: set to stopping
+      setTransitionalState(prev => ({ ...prev, [trackType]: 'stopping' }));
+      
       // Stop current track with fade
       if (fadeSettings.enabled) {
         await fadeOut(newAudio, fadeSettings.duration);
@@ -40,9 +47,13 @@ export const useAudioManager = () => {
         newAudio.pause();
       }
       setIsPlaying(prev => ({ ...prev, [trackType]: false }));
+      setTransitionalState(prev => ({ ...prev, [trackType]: 'idle' }));
       setCurrentPlayingEnv(null);
       return;
     }
+    
+    // Immediate feedback: set to starting
+    setTransitionalState(prev => ({ ...prev, [trackType]: 'starting' }));
     
     // Find currently playing track of the same type
     const currentAudioKey = `${currentPlayingEnv}_${trackType}`;
@@ -76,8 +87,9 @@ export const useAudioManager = () => {
       exploration: trackType === 'exploration',
       tension: trackType === 'tension'
     });
+    setTransitionalState(prev => ({ ...prev, [trackType]: 'playing' }));
     setCurrentPlayingEnv(envId);
-  }, [environments, isPlaying, currentPlayingEnv, volumes.music, fadeSettings, audioRefs, setIsPlaying, setCurrentPlayingEnv]);
+  }, [environments, isPlaying, currentPlayingEnv, volumes.music, fadeSettings, audioRefs, setIsPlaying, setTransitionalState, setCurrentPlayingEnv]);
 
   const toggleAmbient = useCallback(async (soundId: string) => {
     const isActive = activeAmbient.includes(soundId);
@@ -86,6 +98,9 @@ export const useAudioManager = () => {
     if (!audioElement) return;
     
     if (isActive) {
+      // Immediate feedback: set to stopping
+      setAmbientState(prev => ({ ...prev, [soundId]: 'stopping' }));
+      
       // Stop seamless looper if it exists
       const looper = seamlessLoopers.current[soundId];
       if (looper) {
@@ -100,7 +115,11 @@ export const useAudioManager = () => {
         }
       }
       setActiveAmbient(prev => prev.filter(id => id !== soundId));
+      setAmbientState(prev => ({ ...prev, [soundId]: 'idle' }));
     } else {
+      // Immediate feedback: set to starting
+      setAmbientState(prev => ({ ...prev, [soundId]: 'starting' }));
+      
       // Check if we should use seamless looping
       const shouldUseSeamlessLoop = await checkShouldUseSeamlessLoop(audioElement);
       
@@ -120,8 +139,9 @@ export const useAudioManager = () => {
         }
       }
       setActiveAmbient(prev => [...prev, soundId]);
+      setAmbientState(prev => ({ ...prev, [soundId]: 'playing' }));
     }
-  }, [activeAmbient, ambientRefs, volumes.ambient, fadeSettings, setActiveAmbient]);
+  }, [activeAmbient, ambientRefs, volumes.ambient, fadeSettings, setActiveAmbient, setAmbientState]);
 
   // Check if audio should use seamless looping (for tracks > 5 seconds)
   const checkShouldUseSeamlessLoop = (audioElement: HTMLAudioElement): Promise<boolean> => {

@@ -12,6 +12,7 @@ export const EnvironmentsList: React.FC = () => {
     newEnvironmentName, 
     setNewEnvironmentName,
     isPlaying,
+    transitionalState,
     currentPlayingEnv,
     audioRefs
   } = useAudioContext();
@@ -128,29 +129,68 @@ export const EnvironmentsList: React.FC = () => {
               
               {/* Quick Music Controls */}
               <div className="grid grid-cols-3 gap-2">
-                {(['combat', 'exploration', 'tension'] as const).map(trackType => (
-                  <button
-                    key={trackType}
-                    onClick={() => playTrack(env.id, trackType)}
-                    disabled={!env.tracks[trackType]}
-                    className={`p-3 rounded text-xs flex flex-col items-center gap-1 medieval-text transition-all ${
-                      !env.tracks[trackType] 
-                        ? 'bg-medieval-stone/40 text-medieval-parchment/40 cursor-not-allowed border border-medieval-stone/20' 
-                        : (isPlaying[trackType] && currentPlayingEnv === env.id)
+                {(['combat', 'exploration', 'tension'] as const).map(trackType => {
+                  const currentState = transitionalState[trackType];
+                  const isCurrentEnv = currentPlayingEnv === env.id;
+                  
+                  const getButtonStyle = () => {
+                    if (!env.tracks[trackType]) {
+                      return 'bg-medieval-stone/40 text-medieval-parchment/40 cursor-not-allowed border border-medieval-stone/20';
+                    }
+                    
+                    switch (currentState) {
+                      case 'starting':
+                        return isCurrentEnv 
+                          ? 'bg-medieval-gold/40 border-medieval-gold text-medieval-parchment shadow-medieval-glow animate-pulse'
+                          : 'bg-medieval-brown border-medieval-brown-light hover:bg-medieval-brown-light hover:border-medieval-gold/50 text-medieval-parchment/90';
+                      case 'playing':
+                        return isCurrentEnv
                           ? 'bg-medieval-forest border-medieval-gold text-medieval-parchment shadow-medieval-glow'
-                          : 'bg-medieval-brown border-medieval-brown-light hover:bg-medieval-brown-light hover:border-medieval-gold/50 text-medieval-parchment/90'
-                    }`}
-                  >
-                    <span className="text-lg">{getTrackIcon(trackType)}</span>
-                    <div className="flex items-center justify-center w-5 h-5">
-                      {isPlaying[trackType] && currentPlayingEnv === env.id ? (
-                        <Pause size={12} />
-                      ) : (
-                        <Play size={12} />
-                      )}
-                    </div>
-                  </button>
-                ))}
+                          : 'bg-medieval-brown border-medieval-brown-light hover:bg-medieval-brown-light hover:border-medieval-gold/50 text-medieval-parchment/90';
+                      case 'stopping':
+                        return isCurrentEnv
+                          ? 'bg-medieval-burgundy/60 border-medieval-burgundy text-medieval-parchment/80 animate-pulse'
+                          : 'bg-medieval-brown border-medieval-brown-light hover:bg-medieval-brown-light hover:border-medieval-gold/50 text-medieval-parchment/90';
+                      default:
+                        return 'bg-medieval-brown border-medieval-brown-light hover:bg-medieval-brown-light hover:border-medieval-gold/50 text-medieval-parchment/90';
+                    }
+                  };
+
+                  const getIconDisplay = () => {
+                    if (!env.tracks[trackType]) {
+                      return <Play size={12} />;
+                    }
+                    
+                    if (isCurrentEnv) {
+                      switch (currentState) {
+                        case 'starting':
+                          return <div className="w-3 h-3 border border-medieval-gold border-t-transparent rounded-full animate-spin"></div>;
+                        case 'playing':
+                          return <Pause size={12} />;
+                        case 'stopping':
+                          return <div className="w-2 h-2 bg-medieval-burgundy rounded-full animate-pulse"></div>;
+                        default:
+                          return <Play size={12} />;
+                      }
+                    }
+                    
+                    return <Play size={12} />;
+                  };
+                  
+                  return (
+                    <button
+                      key={trackType}
+                      onClick={() => playTrack(env.id, trackType)}
+                      disabled={!env.tracks[trackType] || (isCurrentEnv && (currentState === 'starting' || currentState === 'stopping'))}
+                      className={`p-3 rounded text-xs flex flex-col items-center gap-1 medieval-text transition-all ${getButtonStyle()}`}
+                    >
+                      <span className="text-lg">{getTrackIcon(trackType)}</span>
+                      <div className="flex items-center justify-center w-5 h-5">
+                        {getIconDisplay()}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
               
               <p className="text-xs text-medieval-parchment/70 medieval-text mt-2">
