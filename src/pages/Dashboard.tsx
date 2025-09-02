@@ -1,5 +1,5 @@
 import React from 'react';
-import { Square, Settings, Upload, Music } from 'lucide-react';
+import { Square, Settings, Upload, Music, Sword, Shield, Crown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAudioContext } from '../context/AudioContext';
 import { useAudioManager } from '../hooks/useAudioManager';
@@ -26,50 +26,60 @@ const Dashboard: React.FC = () => {
 
   // Main Dashboard View
   return (
-    <div className="bg-gray-900 text-white p-4">
+    <div className="medieval-text text-medieval-parchment p-4">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-            <h1 className="text-xl sm:text-3xl font-bold truncate">🎵 Ambience Manager</h1>
-            
-            {/* Navigation - Always visible but icon-only on mobile */}
-            <nav className="flex items-center gap-1 sm:gap-2">
-              <Link
-                to="/"
-                className="bg-blue-600 hover:bg-blue-700 px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-                title="Dashboard"
-              >
-                <Music size={16} className="sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Dashboard</span>
-              </Link>
-              <Link
-                to="/tracks"
-                className="bg-gray-700 hover:bg-gray-600 px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-                title="My Tracks"
-              >
-                <Upload size={16} className="sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">My Tracks</span>
-              </Link>
-            </nav>
-          </div>
+        {/* Medieval Header */}
+        <div className="medieval-card p-6 mb-6 relative overflow-hidden">
+          {/* Decorative corner elements */}
+          <div className="absolute top-2 left-2 w-8 h-8 border-l-2 border-t-2 border-medieval-gold opacity-50"></div>
+          <div className="absolute top-2 right-2 w-8 h-8 border-r-2 border-t-2 border-medieval-gold opacity-50"></div>
+          <div className="absolute bottom-2 left-2 w-8 h-8 border-l-2 border-b-2 border-medieval-gold opacity-50"></div>
+          <div className="absolute bottom-2 right-2 w-8 h-8 border-r-2 border-b-2 border-medieval-gold opacity-50"></div>
           
-          <div className="flex items-center gap-1 sm:gap-2">
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="bg-gray-700 hover:bg-gray-600 p-2 rounded"
-              title="Settings"
-            >
-              <Settings size={18} className="sm:w-5 sm:h-5" />
-            </button>
-            <button
-              onClick={stopAll}
-              className="bg-red-600 hover:bg-red-700 px-2 sm:px-4 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-              title="Stop All Sounds"
-            >
-              <Square size={14} className="sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Stop All</span>
-            </button>
+          <div className="flex justify-between items-center flex-wrap gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+              <h1 className="medieval-heading text-xl sm:text-3xl truncate text-shadow-medieval-strong">
+                ⚔️ Master's Chamber
+              </h1>
+              
+              {/* Medieval Navigation */}
+              <nav className="flex items-center gap-1 sm:gap-2">
+                <Link
+                  to="/"
+                  className="medieval-btn medieval-btn-primary px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                  title="Main Hall"
+                >
+                  <Crown size={16} className="sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Main Hall</span>
+                </Link>
+                <Link
+                  to="/tracks"
+                  className="medieval-btn px-2 sm:px-3 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                  title="Arsenal"
+                >
+                  <Sword size={16} className="sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Arsenal</span>
+                </Link>
+              </nav>
+            </div>
+            
+            <div className="flex items-center gap-1 sm:gap-2">
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="medieval-btn p-2 rounded"
+                title="Guild Settings"
+              >
+                <Settings size={18} className="sm:w-5 sm:h-5" />
+              </button>
+              <button
+                onClick={stopAll}
+                className="medieval-btn medieval-btn-danger px-2 sm:px-4 py-2 rounded flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                title="Silence All"
+              >
+                <Shield size={14} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Silence All</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -85,6 +95,13 @@ const Dashboard: React.FC = () => {
 
           {/* Sound Effects */}
           <SoundEffects />
+        </div>
+        
+        {/* Medieval Footer Quote */}
+        <div className="text-center mt-8 opacity-70">
+          <p className="medieval-text italic text-medieval-gold text-sm">
+            "In the realm of sound, the master weaves tales untold..."
+          </p>
         </div>
       </div>
     </div>

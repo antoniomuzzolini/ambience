@@ -33,16 +33,23 @@ export const EnvironmentsList: React.FC = () => {
   }, [fetchEnvironments]);
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg">
+    <div className="medieval-card p-6 relative">
+      {/* Decorative corners */}
+      <div className="absolute top-2 left-2 w-6 h-6 border-l border-t border-medieval-gold/40"></div>
+      <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-medieval-gold/40"></div>
+      <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-medieval-gold/40"></div>
+      <div className="absolute bottom-2 right-2 w-6 h-6 border-r border-b border-medieval-gold/40"></div>
+      
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
+        <h2 className="medieval-heading text-xl font-semibold flex items-center gap-2 text-shadow-medieval">
           <Music size={20} />
-          Environments
+          Guild Sanctums
         </h2>
         {!showCreateForm && (
           <button
             onClick={() => setShowCreateForm(true)}
-            className="bg-purple-600 hover:bg-purple-700 p-2 rounded"
+            className="medieval-btn medieval-btn-primary p-2 rounded"
+            title="Create New Sanctum"
           >
             <Plus size={16} />
           </button>
@@ -50,13 +57,13 @@ export const EnvironmentsList: React.FC = () => {
       </div>
 
       {showCreateForm && (
-        <div className="bg-gray-700 p-4 rounded-lg mb-4">
+        <div className="bg-medieval-brown/40 border border-medieval-gold/30 p-4 rounded-lg mb-4">
           <input
             type="text"
             value={newEnvironmentName}
             onChange={(e) => setNewEnvironmentName(e.target.value)}
-            placeholder="Environment name"
-            className="w-full p-2 bg-gray-600 rounded mb-3 text-white placeholder-gray-400"
+            placeholder="Name thy sanctum..."
+            className="medieval-input w-full p-2 rounded mb-3"
             onKeyPress={(e) => e.key === 'Enter' && createEnvironment()}
             autoFocus
           />
@@ -64,16 +71,16 @@ export const EnvironmentsList: React.FC = () => {
             <button
               onClick={createEnvironment}
               disabled={!newEnvironmentName.trim()}
-              className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed px-3 py-1 rounded text-sm"
+              className="medieval-btn medieval-btn-success flex-1 px-3 py-1 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create
+              Forge Sanctum
             </button>
             <button
               onClick={() => {
                 setShowCreateForm(false);
                 setNewEnvironmentName('');
               }}
-              className="flex-1 bg-gray-600 hover:bg-gray-500 px-3 py-1 rounded text-sm"
+              className="medieval-btn flex-1 px-3 py-1 rounded text-sm"
             >
               Cancel
             </button>
@@ -82,37 +89,37 @@ export const EnvironmentsList: React.FC = () => {
       )}
       
       {loading ? (
-        <div className="text-center text-gray-400 py-8">
-          Loading environments...
+        <div className="text-center text-medieval-parchment/70 py-8">
+          <div className="medieval-text">Loading sanctums...</div>
         </div>
       ) : environments.length === 0 ? (
-        <div className="text-center text-gray-400 py-8">
-          <Music className="h-12 w-12 mx-auto mb-3 opacity-50" />
-          <p className="text-lg font-medium mb-1">No environments yet</p>
-          <p className="text-sm">Create your first environment to get started</p>
+        <div className="text-center text-medieval-parchment/70 py-8">
+          <Music className="h-12 w-12 mx-auto mb-3 opacity-50 text-medieval-gold" />
+          <p className="text-lg font-medium mb-1 medieval-text text-medieval-gold">No sanctums yet</p>
+          <p className="text-sm medieval-text">Forge your first sanctum to begin thy journey</p>
         </div>
       ) : (
         <div className="space-y-3">
           {environments.map(env => (
-            <div key={env.id} className="bg-gray-700 p-3 rounded">
+            <div key={env.id} className="bg-medieval-brown/40 border border-medieval-gold/30 p-4 rounded">
               <div className="flex justify-between items-center mb-3">
-                <h3 className="font-semibold">{env.name}</h3>
+                <h3 className="font-semibold medieval-text text-medieval-gold text-shadow-medieval">{env.name}</h3>
                 <div className="flex gap-1">
                   <button
                     onClick={() => setEditingEnvironment(env)}
-                    className="bg-gray-600 hover:bg-gray-500 p-1 rounded"
-                    title="Edit Environment"
+                    className="medieval-btn p-1 rounded"
+                    title="Modify Sanctum"
                   >
                     <Edit size={14} />
                   </button>
                   <button
                     onClick={() => {
-                      if (confirm(`Delete environment "${env.name}"?`)) {
+                      if (confirm(`Destroy sanctum "${env.name}"?`)) {
                         deleteEnvironment(env.id);
                       }
                     }}
-                    className="bg-red-600 hover:bg-red-700 p-1 rounded"
-                    title="Delete Environment"
+                    className="medieval-btn medieval-btn-danger p-1 rounded"
+                    title="Destroy Sanctum"
                   >
                     <Trash2 size={14} />
                   </button>
@@ -120,32 +127,34 @@ export const EnvironmentsList: React.FC = () => {
               </div>
               
               {/* Quick Music Controls */}
-              <div className="grid grid-cols-3 gap-1">
+              <div className="grid grid-cols-3 gap-2">
                 {(['combat', 'exploration', 'tension'] as const).map(trackType => (
                   <button
                     key={trackType}
                     onClick={() => playTrack(env.id, trackType)}
                     disabled={!env.tracks[trackType]}
-                    className={`p-2 rounded text-xs flex flex-col items-center gap-1 ${
+                    className={`p-3 rounded text-xs flex flex-col items-center gap-1 medieval-text transition-all ${
                       !env.tracks[trackType] 
-                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                        ? 'bg-medieval-stone/40 text-medieval-parchment/40 cursor-not-allowed border border-medieval-stone/20' 
                         : (isPlaying[trackType] && currentPlayingEnv === env.id)
-                          ? 'bg-green-600 hover:bg-green-700'
-                          : 'bg-blue-600 hover:bg-blue-700'
+                          ? 'bg-medieval-forest border-medieval-gold text-medieval-parchment shadow-medieval-glow'
+                          : 'bg-medieval-brown border-medieval-brown-light hover:bg-medieval-brown-light hover:border-medieval-gold/50 text-medieval-parchment/90'
                     }`}
                   >
-                    <span>{getTrackIcon(trackType)}</span>
-                    {isPlaying[trackType] && currentPlayingEnv === env.id ? (
-                      <Pause size={12} />
-                    ) : (
-                      <Play size={12} />
-                    )}
+                    <span className="text-lg">{getTrackIcon(trackType)}</span>
+                    <div className="flex items-center justify-center w-5 h-5">
+                      {isPlaying[trackType] && currentPlayingEnv === env.id ? (
+                        <Pause size={12} />
+                      ) : (
+                        <Play size={12} />
+                      )}
+                    </div>
                   </button>
                 ))}
               </div>
               
-              <p className="text-xs text-gray-400 mt-2">
-                Tracks: {Object.values(env.tracks).filter(Boolean).length}/3
+              <p className="text-xs text-medieval-parchment/70 medieval-text mt-2">
+                Scrolls: {Object.values(env.tracks).filter(Boolean).length}/3
               </p>
 
               {/* Hidden audio elements */}

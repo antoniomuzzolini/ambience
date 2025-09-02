@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Crown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const UserProfile: React.FC = () => {
@@ -17,10 +17,10 @@ export const UserProfile: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-md transition-colors"
+        className="medieval-btn flex items-center space-x-2 px-3 py-2 rounded-md transition-colors"
       >
-        <User className="h-4 w-4" />
-        <span className="hidden sm:block">{user.username}</span>
+        <Crown className="h-4 w-4" />
+        <span className="hidden sm:block medieval-text font-medium">{user.username}</span>
       </button>
 
       {showDropdown && (
@@ -31,21 +31,38 @@ export const UserProfile: React.FC = () => {
             onClick={() => setShowDropdown(false)}
           />
           
-          {/* Dropdown */}
-          <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-20">
+          {/* Medieval Dropdown */}
+          <div className="absolute right-0 mt-2 w-48 medieval-card border-2 border-medieval-gold rounded-md shadow-medieval z-20">
             <div className="py-1">
-              <div className="px-4 py-2 border-b border-gray-600">
-                <p className="text-sm font-medium text-white">{user.username}</p>
+              {/* User Info Section */}
+              <div className="px-4 py-3 border-b border-medieval-gold/30 bg-medieval-brown/20">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-medieval-gold rounded-full flex items-center justify-center">
+                    <Crown className="h-4 w-4 text-medieval-brown-dark" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-medieval-gold medieval-text">
+                      Lord {user.username}
+                    </p>
+                    <p className="text-xs text-medieval-parchment/70 medieval-text italic">
+                      Master of Sound
+                    </p>
+                  </div>
+                </div>
               </div>
               
+              {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-red-400 hover:bg-gray-700"
+                className="flex items-center space-x-2 w-full px-4 py-3 text-sm medieval-text text-medieval-burgundy hover:bg-medieval-brown/20 transition-colors"
               >
                 <LogOut className="h-4 w-4" />
-                <span>Sign out</span>
+                <span>Depart from Realm</span>
               </button>
             </div>
+            
+            {/* Decorative bottom border */}
+            <div className="h-1 bg-gradient-to-r from-transparent via-medieval-gold to-transparent"></div>
           </div>
         </>
       )}

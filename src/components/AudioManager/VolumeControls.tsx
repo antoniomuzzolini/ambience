@@ -22,16 +22,22 @@ export const VolumeControls: React.FC<VolumeControlsProps> = ({ showSettings }) 
   };
 
   return (
-    <div className="bg-gray-800 p-4 rounded-lg mb-6">
-      <h3 className="font-semibold mb-4">Audio Controls</h3>
+    <div className="medieval-card p-6 mb-6 relative">
+      {/* Decorative corners */}
+      <div className="absolute top-2 left-2 w-6 h-6 border-l border-t border-medieval-gold/40"></div>
+      <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-medieval-gold/40"></div>
+      <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-medieval-gold/40"></div>
+      <div className="absolute bottom-2 right-2 w-6 h-6 border-r border-b border-medieval-gold/40"></div>
+      
+      <h3 className="medieval-heading font-semibold mb-4 text-shadow-medieval">⚙️ Guild Audio Controls</h3>
       
       {/* Volume Controls */}
       <div className="mb-6">
-        <h4 className="text-sm font-medium mb-3 text-blue-400">Volume Levels</h4>
+        <h4 className="text-sm font-medium mb-3 text-medieval-gold medieval-text text-shadow-medieval">🔊 Volume Mastery</h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {(Object.entries(volumes) as [keyof VolumeState, number][]).map(([type, value]) => (
             <div key={type} className="flex flex-col">
-              <label className="text-sm mb-1">{getVolumeLabel(type)}</label>
+              <label className="text-sm mb-1 medieval-text text-medieval-parchment">{getVolumeLabel(type)}</label>
               <input
                 type="range"
                 min="0"
@@ -39,21 +45,24 @@ export const VolumeControls: React.FC<VolumeControlsProps> = ({ showSettings }) 
                 step="0.1"
                 value={value}
                 onChange={(e) => updateVolume(type, parseFloat(e.target.value))}
-                className="w-full"
+                className="medieval-range w-full"
               />
-              <span className="text-xs text-gray-400">{Math.round(value * 100)}%</span>
+              <span className="text-xs text-medieval-parchment/70 medieval-text">{Math.round(value * 100)}%</span>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Medieval Divider */}
+      <div className="medieval-divider"></div>
+
       {/* Fade Settings */}
       <div>
-        <h4 className="text-sm font-medium mb-3 text-purple-400">Fade Settings</h4>
+        <h4 className="text-sm font-medium mb-3 text-medieval-gold medieval-text text-shadow-medieval">🌫️ Transition Enchantments</h4>
         <div className="grid grid-cols-2 gap-4">
           {/* Fade Duration */}
           <div className="flex flex-col">
-            <label className="text-sm mb-1">Fade Duration</label>
+            <label className="text-sm mb-1 medieval-text text-medieval-parchment">Fade Duration</label>
             <input
               type="range"
               min="0.5"
@@ -61,37 +70,37 @@ export const VolumeControls: React.FC<VolumeControlsProps> = ({ showSettings }) 
               step="0.5"
               value={fadeSettings.duration}
               onChange={(e) => handleFadeDurationChange(parseFloat(e.target.value))}
-              className="w-full"
+              className="medieval-range w-full"
             />
-            <span className="text-xs text-gray-400">{fadeSettings.duration}s</span>
+            <span className="text-xs text-medieval-parchment/70 medieval-text">{fadeSettings.duration}s</span>
           </div>
 
           {/* Fade Enable/Disable */}
           <div className="flex flex-col">
-            <label className="text-sm mb-1">Fade Transitions</label>
+            <label className="text-sm mb-1 medieval-text text-medieval-parchment">Fade Transitions</label>
             <div className="flex items-center gap-3 mt-2">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={fadeSettings.enabled}
                   onChange={(e) => handleFadeToggle(e.target.checked)}
-                  className="w-4 h-4"
+                  className="w-4 h-4 accent-medieval-gold"
                 />
-                <span className="text-sm">Enable smooth fading</span>
+                <span className="text-sm medieval-text text-medieval-parchment">Enable smooth fading</span>
               </label>
             </div>
-            <span className="text-xs text-gray-400 mt-1">
+            <span className="text-xs text-medieval-parchment/70 medieval-text mt-1">
               {fadeSettings.enabled ? 'Smooth transitions' : 'Instant changes'}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Tips */}
-      <div className="mt-4 p-3 bg-gray-700 rounded">
-        <p className="text-xs text-gray-400">
-          💡 <strong>Fade transitions</strong> create smooth audio changes when switching tracks or toggling ambient sounds. 
-          Longer durations provide more gradual transitions.
+      {/* Medieval Tips */}
+      <div className="mt-4 p-4 bg-medieval-brown/20 rounded border border-medieval-gold/30">
+        <p className="text-xs text-medieval-parchment/90 medieval-text">
+          🧙‍♂️ <strong className="text-medieval-gold">Master's Wisdom:</strong> Fade transitions create smooth audio changes when switching tracks or toggling ambient sounds. 
+          Longer durations provide more gradual, mystical transitions befitting a true master of sound.
         </p>
       </div>
     </div>

@@ -25,10 +25,10 @@ export const SoundEffects: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const defaultSounds = [
-    { id: 'explosion', name: 'Explosion', icon: '💥', file: 'explosion.mp3', source: 'builtin' as const },
-    { id: 'thunder', name: 'Thunder', icon: '⚡', file: 'thunder.mp3', source: 'builtin' as const },
-    { id: 'wolf', name: 'Wolf', icon: '🐺', file: 'wolf.mp3', source: 'builtin' as const },
-    { id: 'roar', name: 'Roar', icon: '🦁', file: 'roar.mp3', source: 'builtin' as const }
+    { id: 'explosion', name: 'Siege Blast', icon: '💥', file: 'explosion.mp3', source: 'builtin' as const },
+    { id: 'thunder', name: 'Storm\'s Wrath', icon: '⚡', file: 'thunder.mp3', source: 'builtin' as const },
+    { id: 'wolf', name: 'Dire Wolf', icon: '🐺', file: 'wolf.mp3', source: 'builtin' as const },
+    { id: 'roar', name: 'Dragon\'s Cry', icon: '🐉', file: 'roar.mp3', source: 'builtin' as const }
   ];
 
   const fetchSectionConfig = async () => {
@@ -82,20 +82,26 @@ export const SoundEffects: React.FC = () => {
 
   return (
     <>
-      <div className="bg-gray-800 p-4 rounded-lg">
+      <div className="medieval-card p-6 relative">
+        {/* Decorative corners */}
+        <div className="absolute top-2 left-2 w-6 h-6 border-l border-t border-medieval-gold/40"></div>
+        <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-medieval-gold/40"></div>
+        <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-medieval-gold/40"></div>
+        <div className="absolute bottom-2 right-2 w-6 h-6 border-r border-b border-medieval-gold/40"></div>
+        
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
+          <h2 className="medieval-heading text-xl font-semibold flex items-center gap-2 text-shadow-medieval">
             <Zap size={20} />
-            Sound Effects
+            Arcane Effects
           </h2>
           <div className="flex items-center gap-3">
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-medieval-parchment/70 medieval-text">
               Volume: {Math.round((volume?.spot || 0.5) * 100)}%
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 p-2 rounded text-white"
-              title="Edit Section"
+              className="medieval-btn medieval-btn-primary p-2 rounded"
+              title="Customize Spells"
             >
               <Edit size={16} />
             </button>
@@ -111,15 +117,20 @@ export const SoundEffects: React.FC = () => {
               <div key={`${sound.source}-${sound.id}`} className="text-center">
                 <button
                   onClick={() => playSpot(sound.id)}
-                  className="w-full p-3 rounded-lg border-2 bg-gray-700 border-gray-600 hover:bg-gray-600 text-gray-200 transition-all"
+                  className="w-full p-4 rounded-lg border-2 bg-medieval-burgundy/60 border-medieval-burgundy hover:bg-medieval-burgundy/80 hover:border-medieval-gold/50 text-medieval-parchment/90 transition-all medieval-text relative overflow-hidden group"
                 >
-                  <div className="text-2xl mb-1">{sound.icon}</div>
-                  <div className="text-sm font-medium">{displayName}</div>
-                  {sound.source === 'uploaded' && (
-                    <div className="text-xs text-blue-300 mt-1">Custom</div>
-                  )}
-                  <div className="mt-1">
-                    <Play size={16} className="mx-auto" />
+                  <div className="absolute inset-0 bg-medieval-gold/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="relative z-10">
+                    <div className="text-3xl mb-2 filter drop-shadow-lg">{sound.icon}</div>
+                    <div className="text-sm font-medium text-shadow-medieval">{displayName}</div>
+                    {sound.source === 'uploaded' && (
+                      <div className="text-xs text-medieval-gold mt-1 italic">Enchanted</div>
+                    )}
+                    <div className="mt-2 flex justify-center">
+                      <div className="w-6 h-6 rounded-full bg-medieval-burgundy/40 flex items-center justify-center group-hover:bg-medieval-gold/20 transition-colors">
+                        <Play size={14} className="text-medieval-parchment/70 group-hover:text-medieval-gold" />
+                      </div>
+                    </div>
                   </div>
                 </button>
                 
@@ -138,7 +149,7 @@ export const SoundEffects: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         sectionType="effect"
-        sectionTitle="Sound Effects"
+        sectionTitle="Arcane Effects"
         onSave={handleSectionSave}
       />
     </>

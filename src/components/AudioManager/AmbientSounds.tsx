@@ -26,13 +26,13 @@ export const AmbientSounds: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const defaultSounds = [
-    { id: 'city', name: 'City', icon: '🏙️', file: 'city.mp3', source: 'builtin' as const },
-    { id: 'waves', name: 'Waves', icon: '🌊', file: 'waves.mp3', source: 'builtin' as const },
-    { id: 'wind', name: 'Wind', icon: '💨', file: 'wind.mp3', source: 'builtin' as const },
-    { id: 'fire', name: 'Fire', icon: '🔥', file: 'fire.m4a', source: 'builtin' as const },
-    { id: 'forest', name: 'Forest', icon: '🌲', file: 'forest.mp3', source: 'builtin' as const },
-    { id: 'rain', name: 'Rain', icon: '🌧️', file: 'rain.m4a', source: 'builtin' as const },
-    { id: 'war', name: 'War', icon: '⚔️', file: 'war.mp3', source: 'builtin' as const }
+    { id: 'city', name: 'Town Square', icon: '🏘️', file: 'city.mp3', source: 'builtin' as const },
+    { id: 'waves', name: 'Coastal Waters', icon: '🌊', file: 'waves.mp3', source: 'builtin' as const },
+    { id: 'wind', name: 'Mountain Winds', icon: '💨', file: 'wind.mp3', source: 'builtin' as const },
+    { id: 'fire', name: 'Hearth Fire', icon: '🔥', file: 'fire.m4a', source: 'builtin' as const },
+    { id: 'forest', name: 'Enchanted Woods', icon: '🌲', file: 'forest.mp3', source: 'builtin' as const },
+    { id: 'rain', name: 'Storm Showers', icon: '🌧️', file: 'rain.m4a', source: 'builtin' as const },
+    { id: 'war', name: 'Battle Grounds', icon: '⚔️', file: 'war.mp3', source: 'builtin' as const }
   ];
 
   const fetchSectionConfig = async () => {
@@ -86,20 +86,26 @@ export const AmbientSounds: React.FC = () => {
 
   return (
     <>
-      <div className="bg-gray-800 p-4 rounded-lg">
+      <div className="medieval-card p-6 relative">
+        {/* Decorative corners */}
+        <div className="absolute top-2 left-2 w-6 h-6 border-l border-t border-medieval-gold/40"></div>
+        <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-medieval-gold/40"></div>
+        <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-medieval-gold/40"></div>
+        <div className="absolute bottom-2 right-2 w-6 h-6 border-r border-b border-medieval-gold/40"></div>
+        
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
+          <h2 className="medieval-heading text-xl font-semibold flex items-center gap-2 text-shadow-medieval">
             <Volume2 size={20} />
-            Ambient Sounds
+            Realm Ambience
           </h2>
           <div className="flex items-center gap-3">
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-medieval-parchment/70 medieval-text">
               Volume: {Math.round((volume?.ambient || 0.5) * 100)}%
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 p-2 rounded text-white"
-              title="Edit Section"
+              className="medieval-btn medieval-btn-primary p-2 rounded"
+              title="Customize Realm"
             >
               <Edit size={16} />
             </button>
@@ -110,28 +116,38 @@ export const AmbientSounds: React.FC = () => {
           {sounds.map(sound => {
             const audioSrc = getAudioSrc(sound);
             const displayName = getDisplayName(sound);
+            const isActive = activeAmbient.includes(sound.id);
             
             return (
               <div key={`${sound.source}-${sound.id}`} className="text-center">
                 <button
                   onClick={() => toggleAmbient(sound.id)}
-                  className={`w-full p-3 rounded-lg border-2 transition-all ${
-                    activeAmbient.includes(sound.id) 
-                      ? 'bg-green-600 border-green-500 text-white' 
-                      : 'bg-gray-700 border-gray-600 hover:bg-gray-600 text-gray-200'
+                  className={`w-full p-4 rounded-lg border-2 transition-all medieval-text relative overflow-hidden ${
+                    isActive
+                      ? 'bg-medieval-forest border-medieval-gold text-medieval-parchment shadow-medieval-glow' 
+                      : 'bg-medieval-brown/60 border-medieval-brown hover:bg-medieval-brown/80 hover:border-medieval-gold/50 text-medieval-parchment/90'
                   }`}
                 >
-                  <div className="text-2xl mb-1">{sound.icon}</div>
-                  <div className="text-sm font-medium">{displayName}</div>
-                  {sound.source === 'uploaded' && (
-                    <div className="text-xs text-blue-300 mt-1">Custom</div>
+                  {isActive && (
+                    <div className="absolute inset-0 bg-medieval-gold/10 animate-pulse"></div>
                   )}
-                  <div className="mt-1">
-                    {activeAmbient.includes(sound.id) ? (
-                      <Pause size={16} className="mx-auto" />
-                    ) : (
-                      <Play size={16} className="mx-auto" />
+                  <div className="relative z-10">
+                    <div className="text-3xl mb-2 filter drop-shadow-lg">{sound.icon}</div>
+                    <div className="text-sm font-medium text-shadow-medieval">{displayName}</div>
+                    {sound.source === 'uploaded' && (
+                      <div className="text-xs text-medieval-gold mt-1 italic">Enchanted</div>
                     )}
+                    <div className="mt-2 flex justify-center">
+                      {isActive ? (
+                        <div className="w-6 h-6 rounded-full bg-medieval-gold/20 flex items-center justify-center">
+                          <Pause size={14} className="text-medieval-gold" />
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-medieval-brown/40 flex items-center justify-center">
+                          <Play size={14} className="text-medieval-parchment/70" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </button>
                 
@@ -151,7 +167,7 @@ export const AmbientSounds: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         sectionType="ambient"
-        sectionTitle="Ambient Sounds"
+        sectionTitle="Realm Ambience"
         onSave={handleSectionSave}
       />
     </>
