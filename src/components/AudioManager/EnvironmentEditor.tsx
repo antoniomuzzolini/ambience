@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Music, Save, Link as LinkIcon } from 'lucide-react';
+import { Music, Save, Link as LinkIcon, ArrowLeft, Crown } from 'lucide-react';
 import { useAudioContext } from '../../context/AudioContext';
 import { useEnvironments } from '../../hooks/useEnvironments';
 import { TrackSelector } from '../TrackUpload/TrackSelector';
@@ -67,73 +67,97 @@ export const EnvironmentEditor: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
+    <div className="min-h-screen medieval-text text-medieval-parchment p-4">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setEditingEnvironment(null)}
-              className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded"
-            >
-              ← Back
-            </button>
-            <h1 className="text-2xl font-bold">🎵 Manage: {editingEnvironment.name}</h1>
-          </div>
+        {/* Medieval Header */}
+        <div className="medieval-card p-6 mb-6 relative overflow-hidden">
+          {/* Decorative corner elements */}
+          <div className="absolute top-2 left-2 w-8 h-8 border-l-2 border-t-2 border-medieval-gold opacity-50"></div>
+          <div className="absolute top-2 right-2 w-8 h-8 border-r-2 border-t-2 border-medieval-gold opacity-50"></div>
+          <div className="absolute bottom-2 left-2 w-8 h-8 border-l-2 border-b-2 border-medieval-gold opacity-50"></div>
+          <div className="absolute bottom-2 right-2 w-8 h-8 border-r-2 border-b-2 border-medieval-gold opacity-50"></div>
           
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-4 py-2 rounded flex items-center gap-2"
-          >
-            {saving ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                Save Changes
-              </>
-            )}
-          </button>
+          <div className="flex justify-between items-center flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setEditingEnvironment(null)}
+                className="medieval-btn px-4 py-2 rounded flex items-center gap-2"
+              >
+                <ArrowLeft size={16} />
+                Return to Hall
+              </button>
+              <h1 className="medieval-heading text-2xl font-bold text-shadow-medieval-strong">
+                <Crown size={24} className="inline mr-2" />
+                Sanctum: {editingEnvironment.name}
+              </h1>
+            </div>
+            
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="medieval-btn medieval-btn-primary px-4 py-2 rounded flex items-center gap-2 disabled:opacity-50"
+            >
+              {saving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-medieval-brown-dark border-t-transparent"></div>
+                  Enchanting...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Save Sanctum
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Message Display */}
         {message && (
-          <div className={`mb-6 p-4 rounded-lg ${
+          <div className={`mb-6 p-4 rounded-lg medieval-text ${
             message.type === 'success' 
-              ? 'bg-green-900/50 border border-green-500 text-green-200'
-              : 'bg-red-900/50 border border-red-500 text-red-200'
+              ? 'bg-medieval-forest/50 border border-medieval-gold text-medieval-parchment'
+              : 'bg-medieval-burgundy/50 border border-medieval-burgundy text-medieval-parchment'
           }`}>
             {message.text}
           </div>
         )}
 
-        {/* Instructions */}
-        <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-lg mb-6">
+        {/* Medieval Instructions */}
+        <div className="medieval-card p-6 mb-6 relative">
+          {/* Decorative corners */}
+          <div className="absolute top-2 left-2 w-6 h-6 border-l border-t border-medieval-gold/40"></div>
+          <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-medieval-gold/40"></div>
+          <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-medieval-gold/40"></div>
+          <div className="absolute bottom-2 right-2 w-6 h-6 border-r border-b border-medieval-gold/40"></div>
+          
           <div className="flex items-center gap-2 mb-2">
-            <LinkIcon className="h-4 w-4 text-blue-400" />
-            <span className="text-blue-300 font-medium">Link Your Music Tracks</span>
+            <LinkIcon className="h-4 w-4 text-medieval-gold" />
+            <span className="text-medieval-gold font-medium medieval-text">Bind Thy Musical Scrolls</span>
           </div>
-          <p className="text-blue-200 text-sm">
-            Select from your uploaded music tracks for each situation. 
-            You can upload new music tracks in the "My Tracks" section.
+          <p className="text-medieval-parchment/90 text-sm medieval-text">
+            Choose from thy uploaded musical scrolls for each battle scenario. 
+            Thou may upload new scrolls in the "Royal Arsenal" section.
           </p>
         </div>
 
-        {/* Music Tracks */}
-        <div className="bg-gray-800 p-6 rounded-lg">
-          <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+        {/* Medieval Music Tracks */}
+        <div className="medieval-card p-6 relative">
+          {/* Decorative corners */}
+          <div className="absolute top-2 left-2 w-6 h-6 border-l border-t border-medieval-gold/40"></div>
+          <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-medieval-gold/40"></div>
+          <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-medieval-gold/40"></div>
+          <div className="absolute bottom-2 right-2 w-6 h-6 border-r border-b border-medieval-gold/40"></div>
+          
+          <h2 className="medieval-heading text-xl font-semibold mb-6 flex items-center gap-2 text-shadow-medieval">
             <Music size={20} />
-            Music Tracks
+            Musical Scrolls
           </h2>
           
           <div className="grid md:grid-cols-3 gap-6">
             {(['combat', 'exploration', 'tension'] as const).map(trackType => (
-              <div key={trackType} className="p-4 bg-gray-700 rounded-lg">
-                <h3 className="font-medium mb-4 text-center flex items-center justify-center gap-2">
+              <div key={trackType} className="bg-medieval-brown/40 border border-medieval-gold/30 p-4 rounded-lg">
+                <h3 className="font-medium mb-4 text-center flex items-center justify-center gap-2 medieval-text text-medieval-gold text-shadow-medieval">
                   {getTrackIcon(trackType)}
                   {getTrackName(trackType)}
                 </h3>
@@ -141,8 +165,8 @@ export const EnvironmentEditor: React.FC = () => {
                 <TrackSelector
                   selectedTrack={tracks[trackType]}
                   onTrackSelect={(track) => handleTrackChange(trackType, track)}
-                  label={`${getTrackName(trackType)} Track`}
-                  placeholder={`Select ${getTrackName(trackType).toLowerCase()} music...`}
+                  label={`${getTrackName(trackType)} Scroll`}
+                  placeholder={`Choose ${getTrackName(trackType).toLowerCase()} melody...`}
                 />
               </div>
             ))}

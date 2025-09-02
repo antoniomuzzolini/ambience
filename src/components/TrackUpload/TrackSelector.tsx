@@ -67,22 +67,22 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-300">
+      <label className="block text-sm font-medium text-medieval-parchment/90 medieval-text">
         {label}
       </label>
       
       <div className="relative">
         {/* Selected Track or Selector Button */}
         {selectedTrack ? (
-          <div className="bg-gray-700 border border-gray-600 rounded-lg p-3 flex items-center justify-between">
+          <div className="bg-medieval-brown/40 border border-medieval-gold/30 rounded-lg p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Music className="h-4 w-4 text-blue-400" />
-              <span className="text-white truncate">{selectedTrack.name}</span>
+              <Music className="h-4 w-4 text-medieval-gold" />
+              <span className="text-medieval-parchment truncate medieval-text">{selectedTrack.name}</span>
             </div>
             <button
               onClick={clearSelection}
-              className="text-gray-400 hover:text-red-400 p-1"
-              title="Remove track"
+              className="text-medieval-parchment/60 hover:text-medieval-burgundy p-1 transition-colors"
+              title="Remove scroll"
             >
               <X className="h-4 w-4" />
             </button>
@@ -90,25 +90,25 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({
         ) : (
           <button
             onClick={() => setIsOpen(true)}
-            className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-left text-gray-400 hover:bg-gray-600 hover:border-gray-500 transition-colors"
+            className="w-full bg-medieval-brown/40 border border-medieval-brown rounded-lg p-3 text-left text-medieval-parchment/60 hover:bg-medieval-brown/60 hover:border-medieval-gold/50 transition-colors medieval-text"
           >
             {placeholder}
           </button>
         )}
 
-        {/* Dropdown */}
+        {/* Medieval Dropdown */}
         {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50 max-h-80 overflow-hidden">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-medieval-card border-2 border-medieval-gold rounded-lg shadow-medieval z-50 max-h-80 overflow-hidden">
             {/* Search */}
-            <div className="p-3 border-b border-gray-600">
+            <div className="p-3 border-b border-medieval-gold/30">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-medieval-parchment/60" />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search tracks..."
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  placeholder="Search scrolls..."
+                  className="medieval-input w-full pl-10 pr-4 py-2"
                   autoFocus
                 />
               </div>
@@ -117,34 +117,34 @@ export const TrackSelector: React.FC<TrackSelectorProps> = ({
             {/* Track List */}
             <div className="max-h-60 overflow-y-auto">
               {loading ? (
-                <div className="p-4 text-center text-gray-400">
-                  Loading tracks...
+                <div className="p-4 text-center text-medieval-parchment/70 medieval-text">
+                  Loading scrolls...
                 </div>
               ) : filteredTracks.length === 0 ? (
-                <div className="p-4 text-center text-gray-400">
-                  {tracks.length === 0 ? 'No music tracks uploaded yet' : 'No tracks match your search'}
+                <div className="p-4 text-center text-medieval-parchment/70 medieval-text">
+                  {tracks.length === 0 ? 'No musical scrolls in thy collection yet' : 'No scrolls match thy search'}
                 </div>
               ) : (
                 filteredTracks.map((track) => (
                   <button
                     key={track.id}
                     onClick={() => handleTrackSelect(track)}
-                    className="w-full p-3 text-left hover:bg-gray-700 border-b border-gray-700 last:border-b-0 flex items-center gap-2 transition-colors"
+                    className="w-full p-3 text-left hover:bg-medieval-brown/20 border-b border-medieval-gold/20 last:border-b-0 flex items-center gap-2 transition-colors"
                   >
-                    <Music className="h-4 w-4 text-blue-400 flex-shrink-0" />
-                    <span className="text-white truncate">{track.name}</span>
+                    <Music className="h-4 w-4 text-medieval-gold flex-shrink-0" />
+                    <span className="text-medieval-parchment truncate medieval-text">{track.name}</span>
                   </button>
                 ))
               )}
             </div>
 
             {/* Close Button */}
-            <div className="p-2 border-t border-gray-600">
+            <div className="p-2 border-t border-medieval-gold/30">
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-full px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                className="medieval-btn w-full px-3 py-2 text-sm"
               >
-                Close
+                Close Tome
               </button>
             </div>
           </div>
