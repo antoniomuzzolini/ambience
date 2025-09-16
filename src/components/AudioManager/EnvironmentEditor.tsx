@@ -133,11 +133,11 @@ export const EnvironmentEditor: React.FC = () => {
           
           <div className="flex items-center gap-2 mb-2">
             <LinkIcon className="h-4 w-4 text-medieval-gold" />
-            <span className="text-medieval-gold font-medium medieval-text">Bind Thy Musical Scrolls</span>
+            <span className="text-medieval-gold font-medium medieval-text">Select Background Music</span>
           </div>
           <p className="text-medieval-parchment/90 text-sm medieval-text">
-            Choose from thy uploaded musical scrolls for each battle scenario. 
-            Thou may upload new scrolls in the "Royal Arsenal" section.
+            Choose from your uploaded music tracks for each scenario. 
+            You can upload new tracks in the "Tracks" section.
           </p>
         </div>
 
@@ -151,7 +151,7 @@ export const EnvironmentEditor: React.FC = () => {
           
           <h2 className="medieval-heading text-xl font-semibold mb-6 flex items-center gap-2 text-shadow-medieval">
             <Music size={20} />
-            Musical Scrolls
+            Background Music
           </h2>
           
           <div className="grid md:grid-cols-3 gap-6">

@@ -62,8 +62,8 @@ const TracksPage: React.FC = () => {
           <div className="absolute bottom-2 right-2 w-6 h-6 border-r border-b border-medieval-gold/40"></div>
           
           <p className="text-medieval-parchment/90 medieval-text">
-            🏹 <strong className="text-medieval-gold">Master's Arsenal:</strong> Upload and manage thy custom audio scrolls. Each section below displays thy tracks organized by purpose, 
-            with swift upload enchantments to add more sonic treasures to thy campaigns.
+            🏹 <strong className="text-medieval-gold">Audio Library:</strong> Upload and manage your custom audio tracks. Each section below displays your tracks organized by purpose, 
+            with quick upload to add more audio tracks to your sessions.
           </p>
         </div>
 

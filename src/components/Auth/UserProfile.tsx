@@ -57,7 +57,7 @@ export const UserProfile: React.FC = () => {
                 className="flex items-center space-x-2 w-full px-4 py-3 text-sm medieval-text text-medieval-burgundy hover:bg-medieval-brown/20 transition-colors"
               >
                 <LogOut className="h-4 w-4" />
-                <span>Depart from Realm</span>
+                <span>Sign Out</span>
               </button>
             </div>
             

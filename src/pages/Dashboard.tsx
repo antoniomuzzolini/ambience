@@ -67,7 +67,7 @@ const Dashboard: React.FC = () => {
               <button
                 onClick={() => setShowSettings(!showSettings)}
                 className="medieval-btn p-2 rounded"
-                title="Guild Settings"
+                title="Settings"
               >
                 <Settings size={18} className="sm:w-5 sm:h-5" />
               </button>

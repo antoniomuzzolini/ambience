@@ -44,7 +44,7 @@ export const EnvironmentsList: React.FC = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="medieval-heading text-xl font-semibold flex items-center gap-2 text-shadow-medieval">
           <Music size={20} />
-          Guild Sanctums
+          Environments
         </h2>
         {!showCreateForm && (
           <button
@@ -194,7 +194,7 @@ export const EnvironmentsList: React.FC = () => {
               </div>
               
               <p className="text-xs text-medieval-parchment/70 medieval-text mt-2">
-                Scrolls: {Object.values(env.tracks).filter(Boolean).length}/3
+                Tracks: {Object.values(env.tracks).filter(Boolean).length}/3
               </p>
 
               {/* Hidden audio elements */}

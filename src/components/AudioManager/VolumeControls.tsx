@@ -29,11 +29,11 @@ export const VolumeControls: React.FC<VolumeControlsProps> = ({ showSettings }) 
       <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-medieval-gold/40"></div>
       <div className="absolute bottom-2 right-2 w-6 h-6 border-r border-b border-medieval-gold/40"></div>
       
-      <h3 className="medieval-heading font-semibold mb-4 text-shadow-medieval">⚙️ Guild Audio Controls</h3>
+      <h3 className="medieval-heading font-semibold mb-4 text-shadow-medieval">⚙️ Audio Settings</h3>
       
       {/* Volume Controls */}
       <div className="mb-6">
-        <h4 className="text-sm font-medium mb-3 text-medieval-gold medieval-text text-shadow-medieval">🔊 Volume Mastery</h4>
+        <h4 className="text-sm font-medium mb-3 text-medieval-gold medieval-text text-shadow-medieval">🔊 Volume Controls</h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {(Object.entries(volumes) as [keyof VolumeState, number][]).map(([type, value]) => (
             <div key={type} className="flex flex-col">
@@ -100,7 +100,7 @@ export const VolumeControls: React.FC<VolumeControlsProps> = ({ showSettings }) 
       <div className="mt-4 p-4 bg-medieval-brown/20 rounded border border-medieval-gold/30">
         <p className="text-xs text-medieval-parchment/90 medieval-text">
           🧙‍♂️ <strong className="text-medieval-gold">Master's Wisdom:</strong> Fade transitions create smooth audio changes when switching tracks or toggling ambient sounds. 
-          Longer durations provide more gradual, mystical transitions befitting a true master of sound.
+          Longer durations provide more gradual transitions between audio tracks.
         </p>
       </div>
     </div>

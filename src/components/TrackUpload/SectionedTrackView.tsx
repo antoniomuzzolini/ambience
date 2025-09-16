@@ -75,8 +75,8 @@ export const SectionedTrackView: React.FC = () => {
   const sections = [
     {
       id: 'music',
-      title: 'Musical Scrolls',
-      description: 'Epic compositions and bardic melodies',
+      title: 'Background Music',
+      description: 'Songs and musical tracks for atmosphere',
       icon: Music,
       color: 'bg-medieval-burgundy',
       hoverColor: 'hover:bg-medieval-burgundy-dark',
@@ -84,8 +84,8 @@ export const SectionedTrackView: React.FC = () => {
     },
     {
       id: 'ambient',
-      title: 'Realm Ambience',
-      description: 'Atmospheric enchantments and mystical loops',
+      title: 'Ambient Sounds',
+      description: 'Background atmosphere and environmental audio',
       icon: Volume2,
       color: 'bg-medieval-forest',
       hoverColor: 'hover:bg-medieval-forest-dark',
@@ -93,8 +93,8 @@ export const SectionedTrackView: React.FC = () => {
     },
     {
       id: 'effect',
-      title: 'Arcane Effects',
-      description: 'Magical incantations and spell sounds',
+      title: 'Sound Effects',
+      description: 'One-shot sounds and audio cues',
       icon: Zap,
       color: 'bg-medieval-gold',
       hoverColor: 'hover:bg-medieval-gold-dark',
@@ -105,7 +105,7 @@ export const SectionedTrackView: React.FC = () => {
   if (loading) {
     return (
       <div className="medieval-card p-6">
-        <div className="text-center text-medieval-parchment/70 medieval-text">Loading scrolls from the archives...</div>
+        <div className="text-center text-medieval-parchment/70 medieval-text">Loading audio tracks...</div>
       </div>
     );
   }

@@ -92,7 +92,7 @@ export const SoundEffects: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="medieval-heading text-xl font-semibold flex items-center gap-2 text-shadow-medieval">
             <Zap size={20} />
-            Arcane Effects
+            Sound Effects
           </h2>
           <div className="flex items-center gap-3">
             <div className="text-sm text-medieval-parchment/70 medieval-text">
@@ -101,7 +101,7 @@ export const SoundEffects: React.FC = () => {
             <button
               onClick={() => setIsModalOpen(true)}
               className="medieval-btn medieval-btn-primary p-2 rounded"
-              title="Customize Spells"
+              title="Customize Effects"
             >
               <Edit size={16} />
             </button>
@@ -149,7 +149,7 @@ export const SoundEffects: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         sectionType="effect"
-        sectionTitle="Arcane Effects"
+        sectionTitle="Sound Effects"
         onSave={handleSectionSave}
       />
     </>
